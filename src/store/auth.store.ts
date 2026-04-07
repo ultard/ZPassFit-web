@@ -1,39 +1,38 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 type AuthState = {
-  accessToken: string | null;
-  refreshToken: string | null;
-  setTokens: (tokens: { accessToken: string; refreshToken?: string | null }) => void;
-  clearTokens: () => void;
-};
+  accessToken: string | null
+  refreshToken: string | null
+  setTokens: (tokens: { accessToken: string, refreshToken?: string | null }) => void
+  clearTokens: () => void
+}
 
-const storage =
-  typeof window === "undefined"
+const storage
+  = typeof window === 'undefined'
     ? undefined
-    : createJSONStorage(() => window.localStorage);
+    : createJSONStorage(() => window.localStorage)
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    set => ({
       accessToken: null,
       refreshToken: null,
       setTokens: ({ accessToken, refreshToken = null }) =>
         set({ accessToken, refreshToken }),
-      clearTokens: () => set({ accessToken: null, refreshToken: null }),
+      clearTokens: () => set({ accessToken: null, refreshToken: null })
     }),
     {
-      name: "auth",
+      name: 'auth',
       storage,
-      partialize: (s) => ({
+      partialize: s => ({
         accessToken: s.accessToken,
-        refreshToken: s.refreshToken,
-      }),
-    },
-  ),
-);
+        refreshToken: s.refreshToken
+      })
+    }
+  )
+)
 
 export function getAccessToken(): string | null {
-  return useAuthStore.getState().accessToken;
+  return useAuthStore.getState().accessToken
 }
-
