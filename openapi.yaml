@@ -1,0 +1,1086 @@
+openapi: 3.1.1
+info:
+  title: ZPassFit | v1
+  version: 1.0.0
+servers:
+  - url: http://localhost:5096/
+paths:
+  /attendance/visits:
+    get:
+      tags:
+        - Посещения
+      summary: Текущее посещение
+      description: Возвращает открытое (не завершённое) посещение текущего клиента,
+        если оно есть.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /attendance/visits/history:
+    get:
+      tags:
+        - Посещения
+      summary: История посещений
+      description: Возвращает историю посещений текущего клиента (от новых к старым).
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitLogResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitLogResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitLogResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /attendance/qr_session:
+    post:
+      tags:
+        - Посещения
+      summary: Создать QR-сессию
+      description: Создаёт краткоживущую QR-сессию для входа клиента в клуб.
+        Возвращает токен и время истечения.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/QrSessionResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QrSessionResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/QrSessionResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /attendance/checkin/{token}:
+    post:
+      tags:
+        - Посещения
+      summary: Вход по QR
+      description: Открывает посещение по QR-токену (обычно сканируется на ресепшене).
+        При успехе удаляет QR-сессию.
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /attendance/checkout:
+    post:
+      tags:
+        - Посещения
+      summary: Выход
+      description: Закрывает текущее посещение клиента, проставляя время выхода.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /auth/register:
+    post:
+      tags:
+        - Авторизация
+      summary: Регистрация
+      description: Создаёт нового пользователя.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "201":
+          description: Регистрация прошла успешно
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Не удалось зарегистрировать пользователя
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /auth/login:
+    post:
+      tags:
+        - Авторизация
+      summary: Вход
+      description: Проверяет учётные данные.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: Вход выполнен успешно
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Неверная почта или пароль
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /auth/refresh:
+    post:
+      tags:
+        - Авторизация
+      summary: Обновление токенов
+      description: По действительному токену выдаёт новую пару.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /auth/logout:
+    post:
+      tags:
+        - Авторизация
+      summary: Выход
+      description: Отзывает refresh-токены.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: "null"
+                - $ref: "#/components/schemas/LogoutRequest"
+          text/json:
+            schema:
+              oneOf:
+                - type: "null"
+                - $ref: "#/components/schemas/LogoutRequest"
+          application/*+json:
+            schema:
+              oneOf:
+                - type: "null"
+                - $ref: "#/components/schemas/LogoutRequest"
+      responses:
+        "204":
+          description: Выход выполнен
+  /client/me:
+    get:
+      tags:
+        - Клиенты
+      summary: Профиль клиента
+      description: Возвращает профиль клиента текущего авторизованного пользователя.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags:
+        - Клиенты
+      summary: Создать/обновить профиль клиента
+      description: Создаёт профиль клиента для текущего пользователя, либо обновляет
+        существующий.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertClientMeRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/UpsertClientMeRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/UpsertClientMeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /client/{id}:
+    get:
+      tags:
+        - Клиенты
+      summary: Клиент по ID
+      description: Возвращает информацию о клиенте по его идентификатору.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /membership/membership/plans:
+    get:
+      tags:
+        - Абонементы
+      summary: Список тарифов
+      description: Возвращает список доступных тарифов абонементов.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+  /membership/membership/me:
+    get:
+      tags:
+        - Абонементы
+      summary: Мой абонемент
+      description: Возвращает текущий абонемент авторизованного клиента.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /membership/membership/buy:
+    post:
+      tags:
+        - Абонементы
+      summary: Купить абонемент
+      description: Покупает/активирует абонемент по выбранному тарифу и длительности.
+        Создаёт запись об оплате.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyMembershipRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/BuyMembershipRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/BuyMembershipRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /membership/payments/me:
+    get:
+      tags:
+        - Абонементы
+      summary: Мои платежи
+      description: Возвращает историю платежей текущего клиента.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /prediction/predict:
+    post:
+      tags:
+        - AI
+      summary: Предсказать отток
+      description: Собирает данные клиента из БД, вызывает gRPC PredictionService и
+        возвращает предсказание.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictClientRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/PredictClientRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/PredictClientRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PredictClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PredictClientResponse"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "502":
+          description: Bad Gateway
+components:
+  schemas:
+    AuthResponse:
+      required:
+        - accessToken
+        - refreshToken
+        - accessTokenExpiresAtUtc
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        accessTokenExpiresAtUtc:
+          type: string
+          format: date-time
+    BuyMembershipRequest:
+      required:
+        - planId
+        - durationDays
+        - method
+      type: object
+      properties:
+        planId:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        durationDays:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        method:
+          $ref: "#/components/schemas/PaymentMethod"
+    ClientGender:
+      type: integer
+    ClientResponse:
+      required:
+        - id
+        - lastName
+        - firstName
+        - middleName
+        - birthDate
+        - gender
+        - phone
+        - email
+        - registrationDate
+        - status
+        - bonuses
+        - notes
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        lastName:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        gender:
+          $ref: "#/components/schemas/ClientGender"
+        phone:
+          type: string
+        email:
+          type: string
+        registrationDate:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/ClientStatus"
+        bonuses:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        notes:
+          type:
+            - "null"
+            - string
+    ClientStatus:
+      type: integer
+    LoginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LogoutRequest:
+      required:
+        - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type:
+            - "null"
+            - string
+    MembershipPlanResponse:
+      required:
+        - id
+        - name
+        - description
+        - durations
+        - price
+      type: object
+      properties:
+        id:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        name:
+          type: string
+        description:
+          type: string
+        durations:
+          type: array
+          items:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+        price:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    MembershipResponse:
+      required:
+        - id
+        - planId
+        - status
+        - activatedDate
+        - expireDate
+      type: object
+      properties:
+        id:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        planId:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        status:
+          $ref: "#/components/schemas/MembershipStatus"
+        activatedDate:
+          type: string
+          format: date-time
+        expireDate:
+          type: string
+          format: date-time
+    MembershipStatus:
+      type: integer
+    PaymentMethod:
+      type: integer
+    PaymentResponse:
+      required:
+        - id
+        - amount
+        - method
+        - status
+        - createDate
+        - paymentDate
+      type: object
+      properties:
+        id:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        amount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        method:
+          $ref: "#/components/schemas/PaymentMethod"
+        status:
+          $ref: "#/components/schemas/PaymentStatus"
+        createDate:
+          type: string
+          format: date-time
+        paymentDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+    PaymentStatus:
+      type: integer
+    PredictClientRequest:
+      required:
+        - clientId
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+    PredictClientResponse:
+      required:
+        - prediction
+        - churnProbability
+      type: object
+      properties:
+        prediction:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        churnProbability:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
+          type:
+            - number
+            - string
+          format: double
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+            - "null"
+            - string
+        title:
+          type:
+            - "null"
+            - string
+        status:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - "null"
+            - integer
+            - string
+          format: int32
+        detail:
+          type:
+            - "null"
+            - string
+        instance:
+          type:
+            - "null"
+            - string
+    QrSessionResponse:
+      required:
+        - token
+        - expireDate
+      type: object
+      properties:
+        token:
+          type: string
+          format: uuid
+        expireDate:
+          type: string
+          format: date-time
+    RefreshRequest:
+      required:
+        - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+    RegisterRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UpsertClientMeRequest:
+      required:
+        - lastName
+        - firstName
+        - middleName
+        - birthDate
+        - gender
+        - phone
+        - email
+        - notes
+      type: object
+      properties:
+        lastName:
+          maxLength: 100
+          type: string
+        firstName:
+          maxLength: 100
+          type: string
+        middleName:
+          maxLength: 100
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        gender:
+          $ref: "#/components/schemas/ClientGender"
+        phone:
+          maxLength: 15
+          type: string
+        email:
+          maxLength: 255
+          type: string
+        notes:
+          maxLength: 100
+          type:
+            - "null"
+            - string
+    VisitLogResponse:
+      required:
+        - id
+        - enterDate
+        - leaveDate
+        - membershipId
+        - clientId
+      type: object
+      properties:
+        id:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        enterDate:
+          type: string
+          format: date-time
+        leaveDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+        membershipId:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        clientId:
+          type: string
+          format: uuid
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - Bearer: []
+tags:
+  - name: Посещения
+  - name: Авторизация
+  - name: Клиенты
+  - name: Абонементы
+  - name: AI
