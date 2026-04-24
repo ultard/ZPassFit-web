@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import $api from '~/lib/api.client';
 import { PaymentMethod } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
+import { formatDaysCountRussian } from '~/lib/format-days-ru';
 import queryClient from '~/lib/query.client';
 import { cn } from '~/lib/utils';
 
@@ -21,16 +22,6 @@ function parsePlanDurations(
 		.map((d) => Number(d))
 		.filter((n) => Number.isFinite(n) && n > 0);
 	return [...new Set(nums)].sort((a, b) => a - b);
-}
-
-function formatDaysRu(days: number): string {
-	const n = Math.floor(days);
-	const mod10 = n % 10;
-	const mod100 = n % 100;
-	if (mod100 >= 11 && mod100 <= 14) return `${n} дней`;
-	if (mod10 === 1) return `${n} день`;
-	if (mod10 >= 2 && mod10 <= 4) return `${n} дня`;
-	return `${n} дней`;
 }
 
 export default function CabinetMembershipRoute() {
@@ -63,9 +54,7 @@ export default function CabinetMembershipRoute() {
 	});
 
 	const canBuy =
-		Boolean(selectedPlan) &&
-		Number.isFinite(durationDays) &&
-		durationDays >= 1;
+		Boolean(selectedPlan) && Number.isFinite(durationDays) && durationDays >= 1;
 
 	function selectPlan(planId: string) {
 		setSelectedPlanId(planId);
@@ -115,8 +104,7 @@ export default function CabinetMembershipRoute() {
 								<Label className="text-base">1. Выберите тариф</Label>
 								<div className="grid gap-2 sm:grid-cols-2">
 									{plans.data.map((p) => {
-										const isSelected =
-											String(p.id) === String(selectedPlanId);
+										const isSelected = String(p.id) === String(selectedPlanId);
 										return (
 											<button
 												type="button"
@@ -158,14 +146,12 @@ export default function CabinetMembershipRoute() {
 													<Button
 														key={d}
 														type="button"
-														variant={
-															durationDays === d ? 'default' : 'outline'
-														}
+														variant={durationDays === d ? 'default' : 'outline'}
 														size="sm"
 														className="rounded-full"
 														onClick={() => setDurationDays(d)}
 													>
-														{formatDaysRu(d)}
+														{formatDaysCountRussian(d)}
 													</Button>
 												))}
 											</div>
@@ -180,9 +166,7 @@ export default function CabinetMembershipRoute() {
 													min={1}
 													value={durationDays}
 													onChange={(e) =>
-														setDurationDays(
-															Number(e.currentTarget.value) || 0
-														)
+														setDurationDays(Number(e.currentTarget.value) || 0)
 													}
 												/>
 												<p className="text-xs text-muted-foreground">
@@ -204,7 +188,7 @@ export default function CabinetMembershipRoute() {
 											<div>
 												<span className="text-muted-foreground">Срок:</span>{' '}
 												<span className="font-medium">
-													{formatDaysRu(durationDays)}
+													{formatDaysCountRussian(durationDays)}
 												</span>
 											</div>
 										</div>

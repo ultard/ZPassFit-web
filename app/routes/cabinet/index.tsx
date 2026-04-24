@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import $api from '~/lib/api.client';
 import { MembershipStatus } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
+import { formatDaysCountRussian } from '~/lib/format-days-ru';
 import queryClient from '~/lib/query.client';
 import { cn } from '~/lib/utils';
 
@@ -29,15 +30,6 @@ function parseApiInt32(
 	if (value === null || value === undefined) return null;
 	const parsed = typeof value === 'string' ? Number.parseInt(value, 10) : value;
 	return Number.isFinite(parsed) ? parsed : null;
-}
-
-function formatDaysCountRussian(dayCount: number): string {
-	const lastTwoDigits = Math.abs(dayCount) % 100;
-	const lastDigit = lastTwoDigits % 10;
-	if (lastTwoDigits > 10 && lastTwoDigits < 20) return `${dayCount} дней`;
-	if (lastDigit === 1) return `${dayCount} день`;
-	if (lastDigit >= 2 && lastDigit <= 4) return `${dayCount} дня`;
-	return `${dayCount} дней`;
 }
 
 /**

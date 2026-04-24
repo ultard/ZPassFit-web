@@ -7,7 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!app/components/**/*.tsx", "!!**/dist"]
+		"includes": [
+			"**", 
+			"!app/components/**/*.tsx", 
+			"!app/lib/api.schema.ts",
+			"!!**/dist"
+		]
 	},
 	"formatter": {
 		"enabled": true
