@@ -200,12 +200,168 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /audit:
+    get:
+      tags:
+        - Аудит
+      summary: Журнал аудита
+      description: "Список записей аудита. Фильтры: интервал по UTC, подстрока в
+        Action и EntityType."
+      parameters:
+        - name: fromUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: entityType
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PagedAuditLogsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedAuditLogsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PagedAuditLogsResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /audit/{id}:
+    get:
+      tags:
+        - Аудит
+      summary: Запись аудита по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/AuditLogResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /auth/register:
     post:
       tags:
         - Авторизация
       summary: Регистрация
-      description: Создаёт нового пользователя.
+      description: Создаёт нового пользователя (клиента). Требуется подтверждение
+        администратором.
       requestBody:
         content:
           application/json:
@@ -224,15 +380,15 @@ paths:
           content:
             text/plain:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                $ref: "#/components/schemas/RegisterResponse"
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                $ref: "#/components/schemas/RegisterResponse"
             text/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                $ref: "#/components/schemas/RegisterResponse"
         "400":
-          description: Не удалось зарегистрировать пользователя
+          description: Не удалось зарегистрироватся
           content:
             text/plain:
               schema:
@@ -276,6 +432,18 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
         "401":
           description: Неверная почта или пароль
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Аккаунт не подтверждён или заблокирован
           content:
             text/plain:
               schema:
@@ -355,12 +523,12 @@ paths:
       responses:
         "204":
           description: Выход выполнен
-  /client/me:
+  /client/profile:
     get:
       tags:
         - Клиенты
       summary: Профиль клиента
-      description: Возвращает профиль клиента текущего авторизованного пользователя.
+      description: Возвращает профиль клиента текущего пользователя.
       responses:
         "200":
           description: OK
@@ -398,37 +566,190 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-    put:
+  /client/level:
+    get:
       tags:
         - Клиенты
-      summary: Создать/обновить профиль клиента
-      description: Создаёт профиль клиента для текущего пользователя, либо обновляет
-        существующий.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpsertClientMeRequest"
-          text/json:
-            schema:
-              $ref: "#/components/schemas/UpsertClientMeRequest"
-          application/*+json:
-            schema:
-              $ref: "#/components/schemas/UpsertClientMeRequest"
-        required: true
+      summary: Мой уровень лояльности
+      description: Возвращает активный уровень текущего пользователя, следующий
+        уровень в цепочке и сколько посещений осталось до следующего уровня.
       responses:
         "200":
           description: OK
           content:
             text/plain:
               schema:
-                $ref: "#/components/schemas/ClientResponse"
+                $ref: "#/components/schemas/MyClientLevelResponse"
             application/json:
               schema:
-                $ref: "#/components/schemas/ClientResponse"
+                $ref: "#/components/schemas/MyClientLevelResponse"
             text/json:
               schema:
-                $ref: "#/components/schemas/ClientResponse"
+                $ref: "#/components/schemas/MyClientLevelResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /client/membership:
+    get:
+      tags:
+        - Клиенты
+      summary: Мой абонемент
+      description: Возвращает текущий абонемент текущего пользователя.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /client/payments:
+    get:
+      tags:
+        - Клиенты
+      summary: Мои платежи
+      description: Возвращает историю платежей текущего пользователя.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/bonuses:
+    get:
+      tags:
+        - Дашборд — бонусы
+      summary: Список транзакций бонусов
+      parameters:
+        - name: fromUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: clientId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/BonusTransactionType"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PagedBonusTransactionsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedBonusTransactionsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PagedBonusTransactionsResponse"
         "400":
           description: Bad Request
           content:
@@ -453,12 +774,163 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /client/{id}:
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/bonuses/{id}:
     get:
       tags:
-        - Клиенты
+        - Дашборд — бонусы
+      summary: Транзакция бонусов по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/BonusTransactionListItemResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BonusTransactionListItemResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/BonusTransactionListItemResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients:
+    get:
+      tags:
+        - Дашборд — клиенты
+      summary: Список клиентов
+      description: Постраничный список клиентов с поиском по ФИО, телефону и email.
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PagedClientsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedClientsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PagedClientsResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}:
+    get:
+      tags:
+        - Дашборд — клиенты
       summary: Клиент по ID
-      description: Возвращает информацию о клиенте по его идентификатору.
+      description: Полный профиль клиента для карточки в дашборде.
       parameters:
         - name: id
           in: path
@@ -491,6 +963,18 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -503,7 +987,1338 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /membership/membership/plans:
+  /dashboard/clients/{id}/approve:
+    post:
+      tags:
+        - Дашборд — клиенты
+      summary: Подтвердить клиента
+      description: Переводит клиента в статус Активный.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}/block:
+    post:
+      tags:
+        - Дашборд — клиенты
+      summary: Заблокировать клиента
+      description: Переводит клиента в статус Blocked и отзывает все refresh-токены.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}/unblock:
+    post:
+      tags:
+        - Дашборд — клиенты
+      summary: Разблокировать клиента
+      description: Переводит клиента в статус Active (после блокировки).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/overview:
+    get:
+      tags:
+        - Дашборд
+      summary: Обзор статистики
+      description: Статистика за выбранный календарный месяц.
+      parameters:
+        - name: year
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+        - name: month
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/DashboardOverviewResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardOverviewResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/DashboardOverviewResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/levels:
+    get:
+      tags:
+        - Дашборд — уровни
+      summary: Список уровней
+      description: Все доступные уровни лояльности и их цепочка предыдущих уровней.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LevelResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LevelResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LevelResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    post:
+      tags:
+        - Дашборд — уровни
+      summary: Создать уровень
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLevelRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/CreateLevelRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/CreateLevelRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/levels/{id}:
+    get:
+      tags:
+        - Дашборд — уровни
+      summary: Уровень по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags:
+        - Дашборд — уровни
+      summary: Обновить уровень
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLevelRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLevelRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/UpdateLevelRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/LevelResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    delete:
+      tags:
+        - Дашборд — уровни
+      summary: Удалить уровень
+      description: Нельзя удалить уровень, назначенный клиентам или указанный как
+        предыдущий у другого уровня.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/membership-plans:
+    get:
+      tags:
+        - Дашборд — тарифы
+      summary: Список тарифных планов
+      description: Все тарифы абонементов для настройки и отображения в дашборде.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlanResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    post:
+      tags:
+        - Дашборд — тарифы
+      summary: Создать тарифный план
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMembershipPlanRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/CreateMembershipPlanRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/CreateMembershipPlanRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/membership-plans/{id}:
+    get:
+      tags:
+        - Дашборд — тарифы
+      summary: Тарифный план по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags:
+        - Дашборд — тарифы
+      summary: Обновить тарифный план
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipPlanRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipPlanRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipPlanRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlanResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    delete:
+      tags:
+        - Дашборд — тарифы
+      summary: Удалить тарифный план
+      description: Нельзя удалить план, если на него ссылаются абонементы.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "409":
+          description: Conflict
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/memberships:
+    get:
+      tags:
+        - Дашборд — абонементы
+      summary: Список абонементов
+      description: Постраничный список абонементов с данными клиента и тарифа. Фильтр
+        по статусу и поиск по ФИО, телефону, email и названию тарифа.
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/MembershipStatus"
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PagedMembershipsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedMembershipsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PagedMembershipsResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    post:
+      tags:
+        - Дашборд — абонементы
+      summary: Выдать или продлить абонемент
+      description: Создаёт абонемент или продлевает существующий у клиента по
+        выбранному тарифу и длительности (как покупка, но без записи платежа).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminSetMembershipRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/AdminSetMembershipRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/AdminSetMembershipRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/memberships/{id}:
+    get:
+      tags:
+        - Дашборд — абонементы
+      summary: Абонемент по ID
+      description: Карточка абонемента в дашборде с клиентом и тарифом.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags:
+        - Дашборд — абонементы
+      summary: Обновить абонемент
+      description: Изменение статуса, тарифа и/или дат действия.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/UpdateMembershipRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/MembershipListItemResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/visits:
+    get:
+      tags:
+        - Дашборд — посещения
+      summary: Список посещений
+      description: "Постраничный журнал посещений. Фильтры: интервал входа по UTC,
+        клиент, только открытые/закрытые, поиск по ФИО, телефону и email
+        клиента."
+      parameters:
+        - name: enterFromUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: enterToUtc
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: clientId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: openOnly
+          in: query
+          schema:
+            type: boolean
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+            default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PagedVisitLogsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedVisitLogsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PagedVisitLogsResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/visits/{id}:
+    get:
+      tags:
+        - Дашборд — посещения
+      summary: Посещение по ID
+      description: Запись журнала посещений для карточки в дашборде.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/VisitLogResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /membership/plans:
     get:
       tags:
         - Абонементы
@@ -528,50 +2343,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MembershipPlanResponse"
-  /membership/membership/me:
-    get:
-      tags:
-        - Абонементы
-      summary: Мой абонемент
-      description: Возвращает текущий абонемент авторизованного клиента.
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/MembershipResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MembershipResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/MembershipResponse"
-        "401":
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-        "404":
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-  /membership/membership/buy:
+  /membership/buy:
     post:
       tags:
         - Абонементы
@@ -627,61 +2399,24 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /membership/payments/me:
-    get:
-      tags:
-        - Абонементы
-      summary: Мои платежи
-      description: Возвращает историю платежей текущего клиента.
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentResponse"
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentResponse"
-            text/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PaymentResponse"
-        "401":
-          description: Unauthorized
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-  /prediction/predict:
+  /prediction/churn:
     post:
       tags:
         - AI
-      summary: Предсказать отток
+      summary: Рассчитать вероятность оттока
       description: Собирает данные клиента из БД, вызывает gRPC PredictionService и
-        возвращает предсказание.
+        возвращает вероятность оттока.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PredictClientRequest"
+              $ref: "#/components/schemas/ChurnPredictionRequest"
           text/json:
             schema:
-              $ref: "#/components/schemas/PredictClientRequest"
+              $ref: "#/components/schemas/ChurnPredictionRequest"
           application/*+json:
             schema:
-              $ref: "#/components/schemas/PredictClientRequest"
+              $ref: "#/components/schemas/ChurnPredictionRequest"
         required: true
       responses:
         "200":
@@ -689,13 +2424,13 @@ paths:
           content:
             text/plain:
               schema:
-                $ref: "#/components/schemas/PredictClientResponse"
+                $ref: "#/components/schemas/ChurnPredictionResponse"
             application/json:
               schema:
-                $ref: "#/components/schemas/PredictClientResponse"
+                $ref: "#/components/schemas/ChurnPredictionResponse"
             text/json:
               schema:
-                $ref: "#/components/schemas/PredictClientResponse"
+                $ref: "#/components/schemas/ChurnPredictionResponse"
         "404":
           description: Not Found
           content:
@@ -712,6 +2447,73 @@ paths:
           description: Bad Gateway
 components:
   schemas:
+    AdminSetMembershipRequest:
+      required:
+        - clientId
+        - planId
+        - durationDays
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+        planId:
+          type: string
+          format: uuid
+        durationDays:
+          maximum: 3650
+          minimum: 1
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    AuditLogResponse:
+      required:
+        - id
+        - occurredAtUtc
+        - userId
+        - userEmail
+        - action
+        - entityType
+        - entityId
+        - details
+        - ipAddress
+      type: object
+      properties:
+        id:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int64
+        occurredAtUtc:
+          type: string
+          format: date-time
+        userId:
+          type:
+            - "null"
+            - string
+        userEmail:
+          type:
+            - "null"
+            - string
+        action:
+          type: string
+        entityType:
+          type: string
+        entityId:
+          type:
+            - "null"
+            - string
+        details:
+          type:
+            - "null"
+            - string
+        ipAddress:
+          type:
+            - "null"
+            - string
     AuthResponse:
       required:
         - accessToken
@@ -726,6 +2528,39 @@ components:
         accessTokenExpiresAtUtc:
           type: string
           format: date-time
+    BonusTransactionListItemResponse:
+      required:
+        - id
+        - type
+        - createDate
+        - expireDate
+        - clientId
+        - clientLastName
+        - clientFirstName
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/BonusTransactionType"
+        createDate:
+          type: string
+          format: date-time
+        expireDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+        clientId:
+          type: string
+          format: uuid
+        clientLastName:
+          type: string
+        clientFirstName:
+          type: string
+    BonusTransactionType:
+      type: integer
     BuyMembershipRequest:
       required:
         - planId
@@ -734,11 +2569,8 @@ components:
       type: object
       properties:
         planId:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         durationDays:
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
@@ -747,8 +2579,64 @@ components:
           format: int32
         method:
           $ref: "#/components/schemas/PaymentMethod"
+    ChurnPredictionRequest:
+      required:
+        - clientId
+      type: object
+      properties:
+        clientId:
+          type: string
+          format: uuid
+    ChurnPredictionResponse:
+      required:
+        - prediction
+        - probability
+      type: object
+      properties:
+        prediction:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        probability:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
+          type:
+            - number
+            - string
+          format: double
     ClientGender:
       type: integer
+    ClientListItemResponse:
+      required:
+        - id
+        - lastName
+        - firstName
+        - middleName
+        - phone
+        - email
+        - status
+        - registrationDate
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        lastName:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        status:
+          $ref: "#/components/schemas/ClientStatus"
+        registrationDate:
+          type: string
+          format: date-time
     ClientResponse:
       required:
         - id
@@ -800,6 +2688,279 @@ components:
             - string
     ClientStatus:
       type: integer
+    CreateLevelRequest:
+      required:
+        - name
+        - activateDays
+        - graceDays
+        - previousLevelId
+      type: object
+      properties:
+        name:
+          maxLength: 20
+          type: string
+        activateDays:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        graceDays:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        previousLevelId:
+          type:
+            - "null"
+            - string
+          format: uuid
+    CreateMembershipPlanRequest:
+      required:
+        - name
+        - description
+        - durations
+        - price
+      type: object
+      properties:
+        name:
+          maxLength: 32
+          type: string
+        description:
+          maxLength: 128
+          type: string
+        durations:
+          type: array
+          items:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+        price:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    DashboardDayPoint:
+      required:
+        - date
+        - value
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    DashboardKpiItem:
+      required:
+        - id
+        - title
+        - value
+        - previousValue
+        - changePercent
+        - direction
+        - unit
+        - isNewGrowth
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        value:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - number
+            - string
+          format: double
+        previousValue:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - number
+            - string
+          format: double
+        changePercent:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - "null"
+            - number
+            - string
+          format: double
+        direction:
+          type: string
+        unit:
+          type: string
+        isNewGrowth:
+          type: boolean
+    DashboardMembershipPlanPoint:
+      required:
+        - planId
+        - planName
+        - count
+        - sharePercent
+      type: object
+      properties:
+        planId:
+          type: string
+          format: uuid
+        planName:
+          type: string
+        count:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        sharePercent:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - number
+            - string
+          format: double
+    DashboardOverviewResponse:
+      required:
+        - period
+        - kpis
+        - series
+      type: object
+      properties:
+        period:
+          $ref: "#/components/schemas/DashboardPeriodMeta"
+        kpis:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardKpiItem"
+        series:
+          $ref: "#/components/schemas/DashboardSeries"
+    DashboardPeriodMeta:
+      required:
+        - timeZoneId
+        - year
+        - month
+        - label
+        - periodFromUtc
+        - periodToUtcExclusive
+        - compareFromUtc
+        - compareToUtcExclusive
+      type: object
+      properties:
+        timeZoneId:
+          type: string
+        year:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        month:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        label:
+          type: string
+        periodFromUtc:
+          type: string
+          format: date-time
+        periodToUtcExclusive:
+          type: string
+          format: date-time
+        compareFromUtc:
+          type: string
+          format: date-time
+        compareToUtcExclusive:
+          type: string
+          format: date-time
+    DashboardRevenueDayPoint:
+      required:
+        - date
+        - amount
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        amount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int64
+    DashboardSeries:
+      required:
+        - visitsByDay
+        - revenueByDay
+        - newClientsByDay
+        - membershipsByPlan
+      type: object
+      properties:
+        visitsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardDayPoint"
+        revenueByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardRevenueDayPoint"
+        newClientsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardDayPoint"
+        membershipsByPlan:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardMembershipPlanPoint"
+    LevelResponse:
+      required:
+        - id
+        - name
+        - activateDays
+        - graceDays
+        - previousLevelId
+        - previousLevelName
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        activateDays:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        graceDays:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        previousLevelId:
+          type:
+            - "null"
+            - string
+          format: uuid
+        previousLevelName:
+          type:
+            - "null"
+            - string
     LoginRequest:
       required:
         - email
@@ -819,6 +2980,42 @@ components:
           type:
             - "null"
             - string
+    MembershipListItemResponse:
+      required:
+        - id
+        - planId
+        - planName
+        - clientId
+        - clientLastName
+        - clientFirstName
+        - status
+        - activatedDate
+        - expireDate
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        planId:
+          type: string
+          format: uuid
+        planName:
+          type: string
+        clientId:
+          type: string
+          format: uuid
+        clientLastName:
+          type: string
+        clientFirstName:
+          type: string
+        status:
+          $ref: "#/components/schemas/MembershipStatus"
+        activatedDate:
+          type: string
+          format: date-time
+        expireDate:
+          type: string
+          format: date-time
     MembershipPlanResponse:
       required:
         - id
@@ -829,11 +3026,8 @@ components:
       type: object
       properties:
         id:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         name:
           type: string
         description:
@@ -862,17 +3056,11 @@ components:
       type: object
       properties:
         id:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         planId:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         status:
           $ref: "#/components/schemas/MembershipStatus"
         activatedDate:
@@ -883,6 +3071,184 @@ components:
           format: date-time
     MembershipStatus:
       type: integer
+    MyClientLevelResponse:
+      required:
+        - clientLevelId
+        - receiveDate
+        - level
+        - nextLevel
+        - remainingDaysToNextLevel
+      type: object
+      properties:
+        clientLevelId:
+          type: string
+          format: uuid
+        receiveDate:
+          type: string
+          format: date-time
+        level:
+          $ref: "#/components/schemas/LevelResponse"
+        nextLevel:
+          oneOf:
+            - type: "null"
+            - $ref: "#/components/schemas/LevelResponse"
+        remainingDaysToNextLevel:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - "null"
+            - integer
+            - string
+          format: int32
+    PagedAuditLogsResponse:
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - items
+      type: object
+      properties:
+        page:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        pageSize:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        totalCount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogResponse"
+    PagedBonusTransactionsResponse:
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - items
+      type: object
+      properties:
+        page:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        pageSize:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        totalCount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/BonusTransactionListItemResponse"
+    PagedClientsResponse:
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - items
+      type: object
+      properties:
+        page:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        pageSize:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        totalCount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientListItemResponse"
+    PagedMembershipsResponse:
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - items
+      type: object
+      properties:
+        page:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        pageSize:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        totalCount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MembershipListItemResponse"
+    PagedVisitLogsResponse:
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - items
+      type: object
+      properties:
+        page:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        pageSize:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        totalCount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/VisitLogListItemResponse"
     PaymentMethod:
       type: integer
     PaymentResponse:
@@ -896,11 +3262,8 @@ components:
       type: object
       properties:
         id:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         amount:
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
@@ -921,32 +3284,6 @@ components:
           format: date-time
     PaymentStatus:
       type: integer
-    PredictClientRequest:
-      required:
-        - clientId
-      type: object
-      properties:
-        clientId:
-          type: string
-          format: uuid
-    PredictClientResponse:
-      required:
-        - prediction
-        - churnProbability
-      type: object
-      properties:
-        prediction:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
-        churnProbability:
-          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
-          type:
-            - number
-            - string
-          format: double
     ProblemDetails:
       type: object
       properties:
@@ -996,32 +3333,23 @@ components:
       required:
         - email
         - password
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-    UpsertClientMeRequest:
-      required:
         - lastName
         - firstName
         - middleName
         - birthDate
         - gender
         - phone
-        - email
-        - notes
       type: object
       properties:
+        email:
+          type: string
+        password:
+          type: string
         lastName:
-          maxLength: 100
           type: string
         firstName:
-          maxLength: 100
           type: string
         middleName:
-          maxLength: 100
           type: string
         birthDate:
           type: string
@@ -1029,16 +3357,135 @@ components:
         gender:
           $ref: "#/components/schemas/ClientGender"
         phone:
-          maxLength: 15
           type: string
-        email:
-          maxLength: 255
+    RegisterResponse:
+      required:
+        - status
+      type: object
+      properties:
+        status:
           type: string
-        notes:
-          maxLength: 100
+    UpdateLevelRequest:
+      required:
+        - name
+        - activateDays
+        - graceDays
+        - previousLevelId
+      type: object
+      properties:
+        name:
+          maxLength: 20
+          type: string
+        activateDays:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        graceDays:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        previousLevelId:
           type:
             - "null"
             - string
+          format: uuid
+    UpdateMembershipPlanRequest:
+      required:
+        - name
+        - description
+        - durations
+        - price
+      type: object
+      properties:
+        name:
+          maxLength: 32
+          type: string
+        description:
+          maxLength: 128
+          type: string
+        durations:
+          type: array
+          items:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+        price:
+          maximum: 2147483647
+          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    UpdateMembershipRequest:
+      required:
+        - status
+        - planId
+        - activatedDate
+        - expireDate
+      type: object
+      properties:
+        status:
+          oneOf:
+            - type: "null"
+            - $ref: "#/components/schemas/MembershipStatus"
+        planId:
+          type:
+            - "null"
+            - string
+          format: uuid
+        activatedDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+        expireDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+    VisitLogListItemResponse:
+      required:
+        - id
+        - enterDate
+        - leaveDate
+        - membershipId
+        - clientId
+        - clientLastName
+        - clientFirstName
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        enterDate:
+          type: string
+          format: date-time
+        leaveDate:
+          type:
+            - "null"
+            - string
+          format: date-time
+        membershipId:
+          type: string
+          format: uuid
+        clientId:
+          type: string
+          format: uuid
+        clientLastName:
+          type: string
+        clientFirstName:
+          type: string
     VisitLogResponse:
       required:
         - id
@@ -1049,11 +3496,8 @@ components:
       type: object
       properties:
         id:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         enterDate:
           type: string
           format: date-time
@@ -1063,11 +3507,8 @@ components:
             - string
           format: date-time
         membershipId:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
+          type: string
+          format: uuid
         clientId:
           type: string
           format: uuid
@@ -1080,7 +3521,15 @@ security:
   - Bearer: []
 tags:
   - name: Посещения
+  - name: Аудит
   - name: Авторизация
   - name: Клиенты
+  - name: Дашборд — бонусы
+  - name: Дашборд — клиенты
+  - name: Дашборд
+  - name: Дашборд — уровни
+  - name: Дашборд — тарифы
+  - name: Дашборд — абонементы
+  - name: Дашборд — посещения
   - name: Абонементы
   - name: AI
