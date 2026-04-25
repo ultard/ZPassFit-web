@@ -23,7 +23,6 @@ import {
 } from '~/components/ui/card';
 import { Skeleton } from '~/components/ui/skeleton';
 
-/** API отдаёт int32 как number или string — приводим к number. */
 function parseApiInt32(
 	value: string | number | null | undefined
 ): number | null {
@@ -31,30 +30,24 @@ function parseApiInt32(
 	const parsed = typeof value === 'string' ? Number.parseInt(value, 10) : value;
 	return Number.isFinite(parsed) ? parsed : null;
 }
-
-/**
- * Оценка заполнения шкалы: сколько полных дней прошло с получения уровня,
- * относительно суммы (дни на уровне + оставшиеся дни до следующего).
- */
 function estimateLevelProgressPercent(
-	levelReceivedAtIso: string,
-	daysRemainingUntilNext: number | null
+	daysRemainingUntilNext: number | null,
+	nextLevelActivateDays: number | null
 ): number | null {
-	if (daysRemainingUntilNext === null) return null;
-	if (daysRemainingUntilNext <= 0) return 100;
+	if (
+		daysRemainingUntilNext === null ||
+		nextLevelActivateDays === null ||
+		nextLevelActivateDays <= 0
+	) {
+		return null;
+	}
 
-	const levelReceivedAtMs = new Date(levelReceivedAtIso).getTime();
-	const nowMs = Date.now();
-	const millisecondsPerDay = 86_400_000;
-	const daysSinceLevelReceived = Math.max(
-		0,
-		Math.floor((nowMs - levelReceivedAtMs) / millisecondsPerDay)
-	);
-	const totalDaysInThisStretch =
-		daysSinceLevelReceived + daysRemainingUntilNext;
-	if (totalDaysInThisStretch <= 0) return null;
+	if (daysRemainingUntilNext <= 0) {
+		return 100;
+	}
 
-	const ratio = daysSinceLevelReceived / totalDaysInThisStretch;
+	const daysDone = nextLevelActivateDays - daysRemainingUntilNext;
+	const ratio = daysDone / nextLevelActivateDays;
 	return Math.min(100, Math.max(0, ratio * 100));
 }
 
@@ -204,23 +197,24 @@ export default function CabinetOverviewRoute() {
 	);
 	const hasNextLoyaltyLevel = nextLoyaltyLevel !== null;
 
+	const nextLevelRequiredActiveDays = hasNextLoyaltyLevel
+		? parseApiInt32(nextLoyaltyLevel.activateDays)
+		: null;
+
 	let levelProgressPercent: number | null = null;
 	if (
 		clientLevel &&
 		hasNextLoyaltyLevel &&
-		daysRemainingUntilNextLevel !== null
+		daysRemainingUntilNextLevel !== null &&
+		nextLevelRequiredActiveDays !== null
 	) {
 		levelProgressPercent = estimateLevelProgressPercent(
-			clientLevel.receiveDate,
-			daysRemainingUntilNextLevel
+			daysRemainingUntilNextLevel,
+			nextLevelRequiredActiveDays
 		);
 	} else if (clientLevel && !hasNextLoyaltyLevel) {
 		levelProgressPercent = 100;
 	}
-
-	const nextLevelRequiredActiveDays = hasNextLoyaltyLevel
-		? parseApiInt32(nextLoyaltyLevel.activateDays)
-		: null;
 
 	const activeVisit = activeVisitQuery.data;
 	const hasOpenVisit = Boolean(

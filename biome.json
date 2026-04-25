@@ -8,8 +8,8 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
-			"**", 
-			"!app/components/**/*.tsx", 
+			"**",
+			"!app/components/**/*.tsx",
 			"!app/lib/api.schema.ts",
 			"!!**/dist"
 		]
