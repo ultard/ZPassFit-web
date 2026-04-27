@@ -3,8 +3,8 @@ import { useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
-import { getErrorMessage } from '~/lib/error-message';
 import queryClient from '~/lib/query.client';
+import { getErrorMessage } from '~/lib/error-message';
 
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';

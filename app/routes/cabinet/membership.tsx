@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
+import queryClient from '~/lib/query.client';
 import { PaymentMethod } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
 import { formatDaysCountRussian } from '~/lib/format-days-ru';
-import queryClient from '~/lib/query.client';
 import { cn } from '~/lib/utils';
 
 import { Button } from '~/components/ui/button';

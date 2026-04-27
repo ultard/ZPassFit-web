@@ -2,9 +2,9 @@ import { useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
+import queryClient from '~/lib/query.client';
 import { ClientStatus } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
-import queryClient from '~/lib/query.client';
 
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';

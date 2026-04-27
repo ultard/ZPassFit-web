@@ -6,10 +6,10 @@ import {
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
+import queryClient from '~/lib/query.client';
 import { MembershipStatus } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
 import { formatDaysCountRussian } from '~/lib/format-days-ru';
-import queryClient from '~/lib/query.client';
 import { cn } from '~/lib/utils';
 
 import { Badge } from '~/components/ui/badge';
