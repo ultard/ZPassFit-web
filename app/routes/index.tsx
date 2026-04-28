@@ -4,5 +4,9 @@ import { useAuthStore } from '~/store/auth.store';
 
 export default function IndexRoute() {
 	const accessToken = useAuthStore((s) => s.accessToken);
-	return <Navigate to={accessToken ? '/cabinet' : '/auth/login'} replace />;
+	const isAdmin = useAuthStore((s) => s.isAdmin());
+	const isEmployee = useAuthStore((s) => s.isEmployee());
+
+	if (!accessToken) return <Navigate to="/auth/login" replace />;
+	return <Navigate to={isAdmin || isEmployee ? '/admin' : '/cabinet'} replace />;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
@@ -16,12 +16,27 @@ import {
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 
-import { setTokens } from '~/store/auth.store';
+import { setTokens, useAuthStore } from '~/store/auth.store';
 
 export default function LoginRoute() {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+
+	const from = (location.state as { from?: string } | null)?.from;
+
+	function resolvePostLoginRedirect() {
+		const state = useAuthStore.getState();
+		const home = state.isAdmin() || state.isEmployee() ? '/admin' : '/cabinet';
+
+		if (typeof from !== 'string' || !from.startsWith('/')) return home;
+
+		if (from.startsWith('/admin')) return home === '/admin' ? from : home;
+		if (from.startsWith('/cabinet')) return home === '/cabinet' ? from : home;
+
+		return from;
+	}
 
 	const login = $api.useMutation('post', '/auth/login', {
 		onSuccess: (data) => {
@@ -30,7 +45,7 @@ export default function LoginRoute() {
 				refreshToken: data.refreshToken
 			});
 			toast.success('Вы вошли в систему');
-			navigate('/cabinet', { replace: true });
+			navigate(resolvePostLoginRedirect(), { replace: true });
 		},
 		onError: (err) => {
 			toast.error(getErrorMessage(err, 'Не удалось войти'));

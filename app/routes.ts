@@ -16,6 +16,7 @@ export default [
 	]),
 	route('admin', 'routes/admin/layout.tsx', [
 		index('routes/admin/index.tsx'),
+		route('audit', 'routes/admin/audit.tsx'),
 		route('scan', 'routes/admin/scan.tsx'),
 		route('clients', 'routes/admin/clients.tsx'),
 		route('clients/:id', 'routes/admin/client.tsx'),

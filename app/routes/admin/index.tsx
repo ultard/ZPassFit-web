@@ -159,7 +159,7 @@ export default function AdminOverviewRoute() {
 						<CardHeader>
 							<CardTitle>Посещения по дням</CardTitle>
 						</CardHeader>
-						<CardContent className="h-72">
+						<CardContent className="max-h-72">
 							<ChartContainer config={visitsChartConfig}>
 								<BarChart data={series.visitsByDay}>
 									<CartesianGrid strokeDasharray="3 3" />
@@ -176,7 +176,7 @@ export default function AdminOverviewRoute() {
 						<CardHeader>
 							<CardTitle>Выручка по дням</CardTitle>
 						</CardHeader>
-						<CardContent className="h-72">
+						<CardContent className="max-h-72">
 							<ChartContainer config={revenueChartConfig}>
 								<BarChart data={series.revenueByDay}>
 									<CartesianGrid strokeDasharray="3 3" />
@@ -193,7 +193,7 @@ export default function AdminOverviewRoute() {
 						<CardHeader>
 							<CardTitle>Новые клиенты по дням</CardTitle>
 						</CardHeader>
-						<CardContent className="h-72">
+						<CardContent className="max-h-72">
 							<ChartContainer config={newClientsChartConfig}>
 								<BarChart data={series.newClientsByDay}>
 									<CartesianGrid strokeDasharray="3 3" />
@@ -210,7 +210,7 @@ export default function AdminOverviewRoute() {
 						<CardHeader>
 							<CardTitle>Абонементы по тарифам</CardTitle>
 						</CardHeader>
-						<CardContent className="h-72">
+						<CardContent className="max-h-72">
 							<ChartContainer config={membershipsByPlanChartConfig}>
 								<BarChart data={series.membershipsByPlan}>
 									<CartesianGrid strokeDasharray="3 3" />

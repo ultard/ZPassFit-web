@@ -22,6 +22,23 @@ export default function AdminClientRoute() {
 		{ enabled: Boolean(id) }
 	);
 
+	const churnPrediction = $api.useMutation('post', '/prediction/churn', {
+		onSuccess: (data) => {
+			const probability =
+				typeof data.probability === 'string'
+					? Number(data.probability)
+					: data.probability;
+
+			const probabilityText = Number.isFinite(probability)
+				? `${(probability * 100).toFixed(1)}%`
+				: String(data.probability);
+
+			toast.success(`Вероятность оттока: ${probabilityText}`);
+		},
+		onError: (e) =>
+			toast.error(getErrorMessage(e, 'Не удалось рассчитать прогноз оттока'))
+	});
+
 	const approve = $api.useMutation('post', '/dashboard/clients/{id}/approve', {
 		onSuccess: async () => {
 			toast.success('Клиент подтверждён');
@@ -81,6 +98,21 @@ export default function AdminClientRoute() {
 			<CardHeader className="flex-row items-center justify-between gap-4">
 				<CardTitle>Клиент</CardTitle>
 				<div className="flex flex-wrap gap-2">
+					<Button
+						variant="outline"
+						disabled={
+							!id ||
+							churnPrediction.isPending ||
+							client.isPending ||
+							Boolean(client.error) ||
+							!client.data
+						}
+						onClick={() =>
+							id && churnPrediction.mutate({ body: { clientId: id } })
+						}
+					>
+						Прогноз оттока
+					</Button>
 					{client.data?.status === ClientStatus.Pending && (
 						<Button
 							variant="secondary"

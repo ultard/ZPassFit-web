@@ -1,6 +1,7 @@
 import {
 	RiBarChartLine,
 	RiCalendarCheckLine,
+	RiFileList3Line,
 	RiGiftLine,
 	RiPriceTag3Line,
 	RiQrScan2Line,
@@ -8,7 +9,11 @@ import {
 	RiTrophyLine,
 	RiUser3Line
 } from '@remixicon/react';
-import { Link, Navigate, Outlet, useLocation } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useNavigate } from 'react-router';
+import { toast } from 'sonner';
+
+import $api from '~/lib/api.client';
+import queryClient from '~/lib/query.client';
 
 import {
 	Sidebar,
@@ -25,10 +30,13 @@ import {
 	SidebarTrigger
 } from '~/components/ui/sidebar';
 
-import { useAuthStore } from '~/store/auth.store';
+import { Button } from '~/components/ui/button';
+
+import { clearTokens, getRefreshToken, useAuthStore } from '~/store/auth.store';
 
 const links = [
 	{ to: '/admin', label: 'Аналитика', Icon: RiBarChartLine },
+	{ to: '/admin/audit', label: 'Аудит', Icon: RiFileList3Line, adminOnly: true },
 	{ to: '/admin/scan', label: 'Скан QR', Icon: RiQrScan2Line },
 	{ to: '/admin/clients', label: 'Клиенты', Icon: RiUser3Line },
 	{ to: '/admin/visits', label: 'Посещения', Icon: RiCalendarCheckLine },
@@ -40,7 +48,23 @@ const links = [
 
 export default function AdminLayout() {
 	const accessToken = useAuthStore((s) => s.accessToken);
+	const isAdmin = useAuthStore((s) => s.isAdmin());
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	const logout = $api.useMutation('post', '/auth/logout', {
+		onSuccess: () => {
+			clearTokens();
+			queryClient.clear();
+			toast.success('Вы вышли из системы');
+			navigate('/auth/login', { replace: true });
+		},
+		onError: () => {
+			clearTokens();
+			queryClient.clear();
+			navigate('/auth/login', { replace: true });
+		}
+	});
 
 	if (!accessToken) {
 		return (
@@ -60,7 +84,9 @@ export default function AdminLayout() {
 						<SidebarGroupLabel>Разделы</SidebarGroupLabel>
 						<SidebarGroupContent>
 							<SidebarMenu>
-								{links.map((l) => {
+								{links
+									.filter((l) => !l.adminOnly || isAdmin)
+									.map((l) => {
 									const isActive =
 										location.pathname === l.to ||
 										(l.to !== '/admin' &&
@@ -87,9 +113,23 @@ export default function AdminLayout() {
 			</Sidebar>
 
 			<SidebarInset>
-				<header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
-					<SidebarTrigger className="-ml-2 md:hidden" />
-					<div className="font-semibold">Admin</div>
+				<header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur">
+					<div className="flex min-w-0 items-center gap-2">
+						<SidebarTrigger className="-ml-2 md:hidden" />
+						<div className="font-semibold truncate">Admin</div>
+					</div>
+
+					<Button
+						variant="outline"
+						size="sm"
+						disabled={logout.isPending}
+						onClick={() => {
+							const refreshToken = getRefreshToken();
+							logout.mutate({ body: refreshToken ? { refreshToken } : null });
+						}}
+					>
+						{logout.isPending ? 'Выходим…' : 'Выйти'}
+					</Button>
 				</header>
 
 				<div className="container mx-auto flex-1 px-4 py-6">
