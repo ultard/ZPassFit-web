@@ -8,5 +8,7 @@ export default function IndexRoute() {
 	const isEmployee = useAuthStore((s) => s.isEmployee());
 
 	if (!accessToken) return <Navigate to="/auth/login" replace />;
-	return <Navigate to={isAdmin || isEmployee ? '/admin' : '/cabinet'} replace />;
+	return (
+		<Navigate to={isAdmin || isEmployee ? '/admin' : '/cabinet'} replace />
+	);
 }

@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import $api from '~/lib/api.client';
 import queryClient from '~/lib/query.client';
 
+import { Button } from '~/components/ui/button';
 import {
 	Sidebar,
 	SidebarContent,
@@ -30,13 +31,16 @@ import {
 	SidebarTrigger
 } from '~/components/ui/sidebar';
 
-import { Button } from '~/components/ui/button';
-
 import { clearTokens, getRefreshToken, useAuthStore } from '~/store/auth.store';
 
 const links = [
 	{ to: '/admin', label: 'Аналитика', Icon: RiBarChartLine },
-	{ to: '/admin/audit', label: 'Аудит', Icon: RiFileList3Line, adminOnly: true },
+	{
+		to: '/admin/audit',
+		label: 'Аудит',
+		Icon: RiFileList3Line,
+		adminOnly: true
+	},
 	{ to: '/admin/scan', label: 'Скан QR', Icon: RiQrScan2Line },
 	{ to: '/admin/clients', label: 'Клиенты', Icon: RiUser3Line },
 	{ to: '/admin/visits', label: 'Посещения', Icon: RiCalendarCheckLine },
@@ -87,23 +91,23 @@ export default function AdminLayout() {
 								{links
 									.filter((l) => !l.adminOnly || isAdmin)
 									.map((l) => {
-									const isActive =
-										location.pathname === l.to ||
-										(l.to !== '/admin' &&
-											location.pathname.startsWith(`${l.to}/`));
-									const Icon = l.Icon;
+										const isActive =
+											location.pathname === l.to ||
+											(l.to !== '/admin' &&
+												location.pathname.startsWith(`${l.to}/`));
+										const Icon = l.Icon;
 
-									return (
-										<SidebarMenuItem key={l.to}>
-											<SidebarMenuButton asChild isActive={isActive}>
-												<Link to={l.to}>
-													<Icon />
-													<span>{l.label}</span>
-												</Link>
-											</SidebarMenuButton>
-										</SidebarMenuItem>
-									);
-								})}
+										return (
+											<SidebarMenuItem key={l.to}>
+												<SidebarMenuButton asChild isActive={isActive}>
+													<Link to={l.to}>
+														<Icon />
+														<span>{l.label}</span>
+													</Link>
+												</SidebarMenuButton>
+											</SidebarMenuItem>
+										);
+									})}
 							</SidebarMenu>
 						</SidebarGroupContent>
 					</SidebarGroup>

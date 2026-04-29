@@ -29,6 +29,7 @@ function parseJwtPayload(token: string): Record<string, unknown> | null {
 	const parts = token.split('.');
 	if (parts.length < 2) return null;
 	try {
+		// biome-ignore lint/style/noNonNullAssertion: эта часть всегда будет
 		const json = decodeBase64UrlToString(parts[1]!);
 		const data = JSON.parse(json) as unknown;
 		if (!data || typeof data !== 'object') return null;
@@ -44,7 +45,8 @@ function toStringOrNull(v: unknown): string | null {
 
 function toNumberOrNull(v: unknown): number | null {
 	if (typeof v === 'number' && Number.isFinite(v)) return v;
-	if (typeof v === 'string' && v.trim() && Number.isFinite(Number(v))) return Number(v);
+	if (typeof v === 'string' && v.trim() && Number.isFinite(Number(v)))
+		return Number(v);
 	return null;
 }
 
@@ -69,7 +71,9 @@ export function parseAuthUserFromAccessToken(
 	return {
 		userId:
 			toStringOrNull(
-				payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
+				payload[
+					'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+				]
 			) ?? toStringOrNull(payload.sub),
 		email: toStringOrNull(payload.email),
 		roles,

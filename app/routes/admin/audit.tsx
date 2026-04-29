@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router';
 
 import $api from '~/lib/api.client';
 import { getErrorMessage } from '~/lib/error-message';
-import { useAuthStore } from '~/store/auth.store';
 
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
@@ -17,6 +16,8 @@ import {
 	TableHeader,
 	TableRow
 } from '~/components/ui/table';
+
+import { useAuthStore } from '~/store/auth.store';
 
 function toIsoOrUndefined(value: string | null) {
 	if (!value) return undefined;
@@ -34,19 +35,6 @@ function fmtDate(value: string) {
 export default function AdminAuditRoute() {
 	const isAdmin = useAuthStore((s) => s.isAdmin());
 	const [searchParams, setSearchParams] = useSearchParams();
-
-	if (!isAdmin) {
-		return (
-			<Card>
-				<CardHeader>
-					<CardTitle>Нет доступа</CardTitle>
-				</CardHeader>
-				<CardContent className="text-sm text-muted-foreground">
-					У вас нет прав для просмотра журнала аудита.
-				</CardContent>
-			</Card>
-		);
-	}
 
 	const from = searchParams.get('from') ?? '';
 	const to = searchParams.get('to') ?? '';
@@ -74,7 +62,7 @@ export default function AdminAuditRoute() {
 		params: { query }
 	});
 
-	if (audit.error) {
+	if (!isAdmin || audit.error) {
 		const status = (audit.error as { status?: number | string | null }).status;
 		if (String(status) === '403') {
 			return (
@@ -246,7 +234,10 @@ export default function AdminAuditRoute() {
 								disabled={(query.page ?? 1) <= 1 || audit.isPending}
 								onClick={() =>
 									setSearchParams((prev) => {
-										prev.set('page', String(Math.max(1, (query.page ?? 1) - 1)));
+										prev.set(
+											'page',
+											String(Math.max(1, (query.page ?? 1) - 1))
+										);
 										return prev;
 									})
 								}
