@@ -48,6 +48,7 @@ export default function CabinetMembershipRoute() {
 				queryKey: ['get', '/client/membership']
 			});
 			queryClient.invalidateQueries({ queryKey: ['get', '/client/payments'] });
+			queryClient.invalidateQueries({ queryKey: ['get', '/client/profile'] });
 		},
 		onError: (err) =>
 			toast.error(getErrorMessage(err, 'Не удалось купить абонемент'))

@@ -725,7 +725,71 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        /**
+         * Обновить профиль
+         * @description Изменяет ФИО, дату рождения и пол текущего клиента.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateClientProfileRequest"];
+                    "text/json": components["schemas"]["UpdateClientProfileRequest"];
+                    "application/*+json": components["schemas"]["UpdateClientProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClientResponse"];
+                        "application/json": components["schemas"]["ClientResponse"];
+                        "text/json": components["schemas"]["ClientResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1391,6 +1455,99 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/clients/{id}/balance/credit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Зачислить на баланс
+         * @description Увеличивает внутренний баланс клиента (пополнение через сотрудника).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreditClientBalanceRequest"];
+                    "text/json": components["schemas"]["CreditClientBalanceRequest"];
+                    "application/*+json": components["schemas"]["CreditClientBalanceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClientResponse"];
+                        "application/json": components["schemas"]["ClientResponse"];
+                        "text/json": components["schemas"]["ClientResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Unauthorized */
                 401: {
@@ -2681,6 +2838,69 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/membership/payment-methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Способы оплаты
+         * @description Доступные способы оплаты для клиентского сценария покупки абонемента и их включение в конфигурации.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PaymentMethodsSettingsResponse"];
+                        "application/json": components["schemas"]["PaymentMethodsSettingsResponse"];
+                        "text/json": components["schemas"]["PaymentMethodsSettingsResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/membership/buy": {
         parameters: {
             query?: never;
@@ -2906,7 +3126,13 @@ export interface components {
             status: components["schemas"]["ClientStatus"];
             /** Format: int32 */
             bonuses: number | string;
+            /** Format: int32 */
+            balance: number | string;
             notes: null | string;
+        };
+        CreditClientBalanceRequest: {
+            /** Format: int32 */
+            amount: number | string;
         };
         ClientStatus: number;
         CreateLevelRequest: {
@@ -3098,6 +3324,16 @@ export interface components {
             items: components["schemas"]["VisitLogListItemResponse"][];
         };
         PaymentMethod: number;
+        PaymentMethodSettingResponse: {
+            method: components["schemas"]["PaymentMethod"];
+            code: string;
+            displayName: string;
+            enabled: boolean;
+            description?: null | string;
+        };
+        PaymentMethodsSettingsResponse: {
+            methods: components["schemas"]["PaymentMethodSettingResponse"][];
+        };
         PaymentResponse: {
             /** Format: uuid */
             id: string;
@@ -3141,6 +3377,14 @@ export interface components {
         };
         RegisterResponse: {
             status: string;
+        };
+        UpdateClientProfileRequest: {
+            lastName: string;
+            firstName: string;
+            middleName: string;
+            /** Format: date-time */
+            birthDate: string;
+            gender: components["schemas"]["ClientGender"];
         };
         UpdateLevelRequest: {
             name: string;

@@ -1,4 +1,5 @@
 import { useParams } from 'react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import $api from '~/lib/api.client';
@@ -8,10 +9,13 @@ import { getErrorMessage } from '~/lib/error-message';
 
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
 
 export default function AdminClientRoute() {
 	const params = useParams();
 	const id = params.id ?? '';
+	const [creditAmount, setCreditAmount] = useState('');
 
 	const client = $api.useQuery(
 		'get',
@@ -93,6 +97,33 @@ export default function AdminClientRoute() {
 			toast.error(getErrorMessage(e, 'Не удалось разблокировать клиента'))
 	});
 
+	const creditBalance = $api.useMutation(
+		'post',
+		'/dashboard/clients/{id}/balance/credit',
+		{
+			onSuccess: async () => {
+				toast.success('Баланс пополнен');
+				setCreditAmount('');
+				await queryClient.invalidateQueries({
+					queryKey: [
+						'get',
+						'/dashboard/clients/{id}',
+						{ params: { path: { id } } }
+					]
+				});
+			},
+			onError: (e) =>
+				toast.error(getErrorMessage(e, 'Не удалось зачислить на баланс'))
+		}
+	);
+
+	const creditParsed = Number.parseInt(creditAmount.replace(/\s/g, ''), 10);
+	const canCredit =
+		Boolean(id) &&
+		Number.isFinite(creditParsed) &&
+		creditParsed >= 1 &&
+		!creditBalance.isPending;
+
 	return (
 		<Card>
 			<CardHeader className="flex-row items-center justify-between gap-4">
@@ -155,23 +186,63 @@ export default function AdminClientRoute() {
 					<div className="text-muted-foreground">Клиент не найден</div>
 				)}
 				{client.data && (
-					<div className="grid gap-1">
-						<div>
-							<span className="text-muted-foreground">ФИО:</span>{' '}
-							{client.data.lastName} {client.data.firstName}{' '}
-							{client.data.middleName}
+					<div className="grid gap-6">
+						<div className="grid gap-1">
+							<div>
+								<span className="text-muted-foreground">ФИО:</span>{' '}
+								{client.data.lastName} {client.data.firstName}{' '}
+								{client.data.middleName}
+							</div>
+							<div>
+								<span className="text-muted-foreground">Email:</span>{' '}
+								{client.data.email}
+							</div>
+							<div>
+								<span className="text-muted-foreground">Телефон:</span>{' '}
+								{client.data.phone}
+							</div>
+							<div>
+								<span className="text-muted-foreground">Статус:</span>{' '}
+								{String(client.data.status)}
+							</div>
+							<div>
+								<span className="text-muted-foreground">Бонусы:</span>{' '}
+								{Number(client.data.bonuses).toLocaleString('ru-RU')}
+							</div>
+							<div>
+								<span className="text-muted-foreground">Баланс:</span>{' '}
+								{Number(client.data.balance).toLocaleString('ru-RU')} ₽
+							</div>
 						</div>
-						<div>
-							<span className="text-muted-foreground">Email:</span>{' '}
-							{client.data.email}
-						</div>
-						<div>
-							<span className="text-muted-foreground">Телефон:</span>{' '}
-							{client.data.phone}
-						</div>
-						<div>
-							<span className="text-muted-foreground">Статус:</span>{' '}
-							{String(client.data.status)}
+						<div className="rounded-xl border border-border p-4 grid gap-3 max-w-md">
+							<div className="font-medium">Пополнение баланса</div>
+							<p className="text-muted-foreground text-xs">
+								Сумма в рублях (целое число). Зачисление доступно сотрудникам и
+								администраторам.
+							</p>
+							<div className="grid gap-2">
+								<Label htmlFor="credit-amount">Сумма, ₽</Label>
+								<Input
+									id="credit-amount"
+									inputMode="numeric"
+									placeholder="Например, 500"
+									value={creditAmount}
+									onChange={(e) => setCreditAmount(e.target.value)}
+								/>
+							</div>
+							<Button
+								type="button"
+								disabled={!canCredit}
+								onClick={() => {
+									if (!id || !canCredit) return;
+									creditBalance.mutate({
+										params: { path: { id } },
+										body: { amount: creditParsed }
+									});
+								}}
+							>
+								Зачислить
+							</Button>
 						</div>
 					</div>
 				)}

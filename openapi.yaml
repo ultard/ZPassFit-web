@@ -566,6 +566,72 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags:
+        - Клиенты
+      summary: Обновить профиль
+      description: Изменяет ФИО, дату рождения и пол текущего клиента.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientProfileRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientProfileRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientProfileRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /client/level:
     get:
       tags:
@@ -1107,6 +1173,92 @@ paths:
       responses:
         "204":
           description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}/balance/credit:
+    post:
+      tags:
+        - Дашборд — клиенты
+      summary: Зачислить на баланс
+      description: Увеличивает внутренний баланс клиента (пополнение через сотрудника).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditClientBalanceRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/CreditClientBalanceRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/CreditClientBalanceRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -2343,6 +2495,51 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MembershipPlanResponse"
+  /membership/payment-methods:
+    get:
+      tags:
+        - Абонементы
+      summary: Способы оплаты
+      description: >-
+        Доступные способы оплаты для клиентского сценария покупки абонемента и их
+        включение в конфигурации.
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/PaymentMethodsSettingsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethodsSettingsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethodsSettingsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /membership/buy:
     post:
       tags:
@@ -2650,6 +2847,7 @@ components:
         - registrationDate
         - status
         - bonuses
+        - balance
         - notes
       type: object
       properties:
@@ -2682,10 +2880,27 @@ components:
             - integer
             - string
           format: int32
+        balance:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
         notes:
           type:
             - "null"
             - string
+    CreditClientBalanceRequest:
+      required:
+        - amount
+      type: object
+      properties:
+        amount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
     ClientStatus:
       type: integer
     CreateLevelRequest:
@@ -3251,6 +3466,35 @@ components:
             $ref: "#/components/schemas/VisitLogListItemResponse"
     PaymentMethod:
       type: integer
+    PaymentMethodSettingResponse:
+      required:
+        - method
+        - code
+        - displayName
+        - enabled
+      type: object
+      properties:
+        method:
+          $ref: "#/components/schemas/PaymentMethod"
+        code:
+          type: string
+        displayName:
+          type: string
+        enabled:
+          type: boolean
+        description:
+          type:
+            - "null"
+            - string
+    PaymentMethodsSettingsResponse:
+      required:
+        - methods
+      type: object
+      properties:
+        methods:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentMethodSettingResponse"
     PaymentResponse:
       required:
         - id
@@ -3365,6 +3609,32 @@ components:
       properties:
         status:
           type: string
+    UpdateClientProfileRequest:
+      required:
+        - lastName
+        - firstName
+        - middleName
+        - birthDate
+        - gender
+      type: object
+      properties:
+        lastName:
+          maxLength: 100
+          minLength: 1
+          type: string
+        firstName:
+          maxLength: 100
+          minLength: 1
+          type: string
+        middleName:
+          maxLength: 100
+          minLength: 1
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        gender:
+          $ref: "#/components/schemas/ClientGender"
     UpdateLevelRequest:
       required:
         - name
