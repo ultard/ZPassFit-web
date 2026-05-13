@@ -43,7 +43,9 @@ export default function CabinetSettingsRoute() {
 	const updateProfile = $api.useMutation('put', '/client/profile', {
 		onSuccess: async () => {
 			toast.success('Профиль сохранён');
-			await queryClient.invalidateQueries({ queryKey: ['get', '/client/profile'] });
+			await queryClient.invalidateQueries({
+				queryKey: ['get', '/client/profile']
+			});
 		},
 		onError: (e) =>
 			toast.error(getErrorMessage(e, 'Не удалось сохранить профиль'))
@@ -64,7 +66,9 @@ export default function CabinetSettingsRoute() {
 	});
 
 	const canSave =
-		Boolean(lastName.trim() && firstName.trim() && middleName.trim() && birthDate) &&
+		Boolean(
+			lastName.trim() && firstName.trim() && middleName.trim() && birthDate
+		) &&
 		!updateProfile.isPending &&
 		!profile.isPending;
 

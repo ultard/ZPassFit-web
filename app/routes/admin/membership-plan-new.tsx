@@ -61,15 +61,22 @@ export default function AdminMembershipPlanNewRoute() {
 						value={durations}
 						onChange={(e) => setDurations(e.currentTarget.value)}
 					/>
+					<p className="text-xs text-muted-foreground">
+						Первое (минимальное) значение используется как базовый срок для
+						расчёта цены.
+					</p>
 				</div>
 				<div className="grid gap-2">
-					<Label htmlFor="price">Цена</Label>
+					<Label htmlFor="price">Цена за минимальный срок, ₽</Label>
 					<Input
 						id="price"
 						type="number"
 						value={price}
 						onChange={(e) => setPrice(Number(e.currentTarget.value))}
 					/>
+					<p className="text-xs text-muted-foreground">
+						Для остальных сроков стоимость пересчитывается пропорционально.
+					</p>
 				</div>
 				<Button
 					disabled={create.isPending}

@@ -1,5 +1,7 @@
 import $api from '~/lib/api.client';
+import { PaymentStatus } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
+import { paymentMethodLabel } from '~/lib/payment-method-label';
 
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 
@@ -35,7 +37,16 @@ export default function CabinetPaymentsRoute() {
 											: '—'}
 									</div>
 								</div>
-								<div className="text-muted-foreground">{p.method ?? '—'}</div>
+								<div className="text-muted-foreground text-right">
+									<div>{paymentMethodLabel(Number(p.method))}</div>
+									{p.status !== undefined &&
+										p.status !== PaymentStatus.Completed && (
+											<div className="text-xs mt-1">
+												{p.status === PaymentStatus.Pending && 'Ожидает'}
+												{p.status === PaymentStatus.Cancelled && 'Отменён'}
+											</div>
+										)}
+								</div>
 							</div>
 						))}
 					</div>

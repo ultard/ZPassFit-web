@@ -6,6 +6,7 @@ export default [
 		route('login', 'routes/auth/login.tsx'),
 		route('register', 'routes/auth/register.tsx')
 	]),
+	route('membership/yookassa-return', 'routes/membership-yookassa-return.tsx'),
 	route('cabinet', 'routes/cabinet/layout.tsx', [
 		index('routes/cabinet/index.tsx'),
 		route('qr', 'routes/cabinet/qr.tsx'),

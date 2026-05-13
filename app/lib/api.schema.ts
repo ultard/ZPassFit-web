@@ -2970,6 +2970,163 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/membership/yookassa/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Оплатить абонемент через ЮKassa
+         * @description Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя на страницу оплаты.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                    "text/json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                    "application/*+json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StartYooKassaCheckoutResponse"];
+                        "application/json": components["schemas"]["StartYooKassaCheckoutResponse"];
+                        "text/json": components["schemas"]["StartYooKassaCheckoutResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/membership/yookassa/sync/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Синхронизировать статус платежа ЮKassa
+         * @description Запрашивает актуальный статус платежа в API ЮKassa и при успехе активирует абонемент.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** Format: uuid */
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+                /** @description Bad Gateway */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/prediction/churn": {
         parameters: {
             query?: never;
@@ -3333,6 +3490,23 @@ export interface components {
         };
         PaymentMethodsSettingsResponse: {
             methods: components["schemas"]["PaymentMethodSettingResponse"][];
+        };
+        StartYooKassaCheckoutRequest: {
+            /** Format: uuid */
+            planId: string;
+            /** Format: int32 */
+            durationDays: number | string;
+        };
+        StartYooKassaCheckoutResponse: {
+            /** Format: uuid */
+            paymentId: string;
+            confirmationUrl: string;
+            yooKassaPaymentId: string;
+        };
+        SyncYooKassaPaymentResponse: {
+            code: string;
+            yooKassaStatus?: null | string;
+            message?: null | string;
         };
         PaymentResponse: {
             /** Format: uuid */

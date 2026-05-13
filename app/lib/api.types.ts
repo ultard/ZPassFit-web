@@ -32,7 +32,9 @@ export enum PaymentStatus {
 
 export enum PaymentMethod {
 	Cash,
-	Card
+	Card,
+	Balance,
+	YooKassa
 }
 
 export type IdentityError = {
