@@ -173,10 +173,23 @@ export default function CabinetOverviewRoute() {
 	const activeVisitQuery = $api.useQuery('get', '/attendance/visits');
 
 	const checkoutVisit = $api.useMutation('post', '/attendance/checkout', {
-		onSuccess: () => {
-			toast.success('Посещение завершено');
+		onSuccess: (data) => {
+			const bonus =
+				typeof data.disciplineBonusAccrued === 'number'
+					? data.disciplineBonusAccrued
+					: Number(data.disciplineBonusAccrued);
+			if (Number.isFinite(bonus) && bonus > 0) {
+				toast.success(
+					`Посещение завершено. Начислено ${bonus} бонусов за дисциплину`
+				);
+			} else {
+				toast.success('Посещение завершено');
+			}
 			queryClient.invalidateQueries({
 				queryKey: ['get', '/attendance/visits']
+			});
+			queryClient.invalidateQueries({
+				queryKey: ['get', '/client/profile']
 			});
 		},
 		onError: (err) =>

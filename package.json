@@ -8,7 +8,9 @@
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc",
 		"check": "biome check --write",
-		"api:gen": "openapi-typescript ./openapi.yaml -o ./app/lib/api.schema.ts"
+		"api:gen": "openapi-typescript ./openapi.yaml -o ./app/lib/api.schema.ts",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui"
 	},
 	"dependencies": {
 		"@fontsource-variable/figtree": "^5.2.10",
@@ -36,6 +38,7 @@
 		"zustand": "^5.0.12"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.52.0",
 		"@biomejs/biome": "2.4.12",
 		"@react-router/dev": "7.14.0",
 		"@tailwindcss/vite": "^4.2.2",

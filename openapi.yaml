@@ -2500,9 +2500,7 @@ paths:
       tags:
         - Абонементы
       summary: Способы оплаты
-      description: >-
-        Доступные способы оплаты для клиентского сценария покупки абонемента и их
-        включение в конфигурации.
+      description: Доступные способы оплаты для клиентского сценария покупки абонемента.
       responses:
         "200":
           description: OK
@@ -2540,6 +2538,115 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /membership/yookassa/checkout:
+    post:
+      tags:
+        - Абонементы
+      summary: Оплатить абонемент через ЮKassa
+      description: Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя
+        на страницу оплаты.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /membership/yookassa/sync/{paymentId}:
+    post:
+      tags:
+        - Абонементы
+      summary: Синхронизировать статус платежа ЮKassa
+      description: Запрашивает актуальный статус платежа в API ЮKassa и при успехе
+        активирует абонемент.
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "502":
+          description: Bad Gateway
   /membership/buy:
     post:
       tags:
@@ -2596,39 +2703,26 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /membership/yookassa/checkout:
+  /membership/cancel:
     post:
       tags:
         - Абонементы
-      summary: Оплатить абонемент через ЮKassa
-      description: >-
-        Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя на
-        страницу оплаты.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-          text/json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-          application/*+json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-        required: true
+      summary: Отменить абонемент
+      description: "Отключает автопродление: за текущий период списания продолжаются,
+        а следующие периоды не списываются."
       responses:
         "200":
           description: OK
           content:
             text/plain:
               schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+                $ref: "#/components/schemas/MembershipResponse"
             application/json:
               schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+                $ref: "#/components/schemas/MembershipResponse"
             text/json:
               schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+                $ref: "#/components/schemas/MembershipResponse"
         "400":
           description: Bad Request
           content:
@@ -2653,82 +2747,6 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /membership/yookassa/sync/{paymentId}:
-    post:
-      tags:
-        - Абонементы
-      summary: Синхронизировать статус платежа ЮKassa
-      description: >-
-        Запрашивает актуальный статус платежа в API ЮKassa и при успехе активирует
-        абонемент.
-      parameters:
-        - name: paymentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-        "400":
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-        "403":
-          description: Forbidden
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-        "404":
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-        "502":
-          description: Bad Gateway
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
   /prediction/churn:
     post:
       tags:
@@ -2775,6 +2793,14 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
         "502":
           description: Bad Gateway
+  /webhooks/yookassa:
+    post:
+      tags:
+        - YooKassaWebhook
+      summary: Webhook ЮKassa
+      responses:
+        "200":
+          description: OK
 components:
   schemas:
     AdminSetMembershipRequest:
@@ -2791,8 +2817,6 @@ components:
           type: string
           format: uuid
         durationDays:
-          maximum: 3650
-          minimum: 1
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
@@ -2862,6 +2886,7 @@ components:
       required:
         - id
         - type
+        - amount
         - createDate
         - expireDate
         - clientId
@@ -2874,6 +2899,12 @@ components:
           format: uuid
         type:
           $ref: "#/components/schemas/BonusTransactionType"
+        amount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
         createDate:
           type: string
           format: date-time
@@ -3023,17 +3054,6 @@ components:
           type:
             - "null"
             - string
-    CreditClientBalanceRequest:
-      required:
-        - amount
-      type: object
-      properties:
-        amount:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
     ClientStatus:
       type: integer
     CreateLevelRequest:
@@ -3045,19 +3065,14 @@ components:
       type: object
       properties:
         name:
-          maxLength: 20
           type: string
         activateDays:
-          maximum: 2147483647
-          minimum: 0
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
             - string
           format: int32
         graceDays:
-          maximum: 2147483647
-          minimum: 0
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
@@ -3077,10 +3092,8 @@ components:
       type: object
       properties:
         name:
-          maxLength: 32
           type: string
         description:
-          maxLength: 128
           type: string
         durations:
           type: array
@@ -3091,8 +3104,17 @@ components:
               - string
             format: int32
         price:
-          maximum: 2147483647
-          minimum: 0
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    CreditClientBalanceRequest:
+      required:
+        - amount
+      type: object
+      properties:
+        amount:
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
@@ -3605,6 +3627,7 @@ components:
         - code
         - displayName
         - enabled
+        - description
       type: object
       properties:
         method:
@@ -3628,50 +3651,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PaymentMethodSettingResponse"
-    StartYooKassaCheckoutRequest:
-      required:
-        - planId
-        - durationDays
-      type: object
-      properties:
-        planId:
-          type: string
-          format: uuid
-        durationDays:
-          pattern: ^-?(?:0|[1-9]\d*)$
-          type:
-            - integer
-            - string
-          format: int32
-    StartYooKassaCheckoutResponse:
-      required:
-        - paymentId
-        - confirmationUrl
-        - yooKassaPaymentId
-      type: object
-      properties:
-        paymentId:
-          type: string
-          format: uuid
-        confirmationUrl:
-          type: string
-        yooKassaPaymentId:
-          type: string
-    SyncYooKassaPaymentResponse:
-      required:
-        - code
-      type: object
-      properties:
-        code:
-          type: string
-        yooKassaStatus:
-          type:
-            - "null"
-            - string
-        message:
-          type:
-            - "null"
-            - string
     PaymentResponse:
       required:
         - id
@@ -3786,6 +3765,50 @@ components:
       properties:
         status:
           type: string
+    StartYooKassaCheckoutRequest:
+      required:
+        - planId
+        - durationDays
+      type: object
+      properties:
+        planId:
+          type: string
+          format: uuid
+        durationDays:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    StartYooKassaCheckoutResponse:
+      required:
+        - paymentId
+        - confirmationUrl
+        - yooKassaPaymentId
+      type: object
+      properties:
+        paymentId:
+          type: string
+          format: uuid
+        confirmationUrl:
+          type: string
+        yooKassaPaymentId:
+          type: string
+    SyncYooKassaPaymentResponse:
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+        yooKassaStatus:
+          type:
+            - "null"
+            - string
+        message:
+          type:
+            - "null"
+            - string
     UpdateClientProfileRequest:
       required:
         - lastName
@@ -3796,16 +3819,10 @@ components:
       type: object
       properties:
         lastName:
-          maxLength: 100
-          minLength: 1
           type: string
         firstName:
-          maxLength: 100
-          minLength: 1
           type: string
         middleName:
-          maxLength: 100
-          minLength: 1
           type: string
         birthDate:
           type: string
@@ -3821,19 +3838,14 @@ components:
       type: object
       properties:
         name:
-          maxLength: 20
           type: string
         activateDays:
-          maximum: 2147483647
-          minimum: 0
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
             - string
           format: int32
         graceDays:
-          maximum: 2147483647
-          minimum: 0
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
@@ -3853,10 +3865,8 @@ components:
       type: object
       properties:
         name:
-          maxLength: 32
           type: string
         description:
-          maxLength: 128
           type: string
         durations:
           type: array
@@ -3867,8 +3877,6 @@ components:
               - string
             format: int32
         price:
-          maximum: 2147483647
-          minimum: 0
           pattern: ^-?(?:0|[1-9]\d*)$
           type:
             - integer
@@ -3959,6 +3967,13 @@ components:
         clientId:
           type: string
           format: uuid
+        disciplineBonusAccrued:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - "null"
+            - integer
+            - string
+          format: int32
   securitySchemes:
     Bearer:
       type: http
@@ -3980,3 +3995,4 @@ tags:
   - name: Дашборд — посещения
   - name: Абонементы
   - name: AI
+  - name: YooKassaWebhook

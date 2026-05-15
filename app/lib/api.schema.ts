@@ -2847,7 +2847,7 @@ export interface paths {
         };
         /**
          * Способы оплаты
-         * @description Доступные способы оплаты для клиентского сценария покупки абонемента и их включение в конфигурации.
+         * @description Доступные способы оплаты для клиентского сценария покупки абонемента.
          */
         get: {
             parameters: {
@@ -2895,6 +2895,147 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/membership/yookassa/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Оплатить абонемент через ЮKassa
+         * @description Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя на страницу оплаты.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                    "text/json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                    "application/*+json": components["schemas"]["StartYooKassaCheckoutRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StartYooKassaCheckoutResponse"];
+                        "application/json": components["schemas"]["StartYooKassaCheckoutResponse"];
+                        "text/json": components["schemas"]["StartYooKassaCheckoutResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/membership/yookassa/sync/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Синхронизировать статус платежа ЮKassa
+         * @description Запрашивает актуальный статус платежа в API ЮKassa и при успехе активирует абонемент.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Bad Gateway */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2970,7 +3111,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/membership/yookassa/checkout": {
+    "/membership/cancel": {
         parameters: {
             query?: never;
             header?: never;
@@ -2980,8 +3121,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Оплатить абонемент через ЮKassa
-         * @description Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя на страницу оплаты.
+         * Отменить абонемент
+         * @description Отключает автопродление: за текущий период списания продолжаются, а следующие периоды не списываются.
          */
         post: {
             parameters: {
@@ -2990,13 +3131,7 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["StartYooKassaCheckoutRequest"];
-                    "text/json": components["schemas"]["StartYooKassaCheckoutRequest"];
-                    "application/*+json": components["schemas"]["StartYooKassaCheckoutRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -3004,9 +3139,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["StartYooKassaCheckoutResponse"];
-                        "application/json": components["schemas"]["StartYooKassaCheckoutResponse"];
-                        "text/json": components["schemas"]["StartYooKassaCheckoutResponse"];
+                        "text/plain": components["schemas"]["MembershipResponse"];
+                        "application/json": components["schemas"]["MembershipResponse"];
+                        "text/json": components["schemas"]["MembershipResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -3029,94 +3164,6 @@ export interface paths {
                         "text/plain": components["schemas"]["ProblemDetails"];
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/membership/yookassa/sync/{paymentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Синхронизировать статус платежа ЮKassa
-         * @description Запрашивает актуальный статус платежа в API ЮKassa и при успехе активирует абонемент.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** Format: uuid */
-                    paymentId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                    };
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                    };
-                };
-                /** @description Bad Gateway */
-                502: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "application/json": components["schemas"]["SyncYooKassaPaymentResponse"];
-                        "text/json": components["schemas"]["SyncYooKassaPaymentResponse"];
                     };
                 };
             };
@@ -3192,6 +3239,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/yookassa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Webhook ЮKassa */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3227,6 +3308,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             type: components["schemas"]["BonusTransactionType"];
+            /** Format: int32 */
+            amount: number | string;
             /** Format: date-time */
             createDate: string;
             /** Format: date-time */
@@ -3287,10 +3370,6 @@ export interface components {
             balance: number | string;
             notes: null | string;
         };
-        CreditClientBalanceRequest: {
-            /** Format: int32 */
-            amount: number | string;
-        };
         ClientStatus: number;
         CreateLevelRequest: {
             name: string;
@@ -3307,6 +3386,10 @@ export interface components {
             durations: (number | string)[];
             /** Format: int32 */
             price: number | string;
+        };
+        CreditClientBalanceRequest: {
+            /** Format: int32 */
+            amount: number | string;
         };
         DashboardDayPoint: {
             /** Format: date */
@@ -3486,27 +3569,10 @@ export interface components {
             code: string;
             displayName: string;
             enabled: boolean;
-            description?: null | string;
+            description: null | string;
         };
         PaymentMethodsSettingsResponse: {
             methods: components["schemas"]["PaymentMethodSettingResponse"][];
-        };
-        StartYooKassaCheckoutRequest: {
-            /** Format: uuid */
-            planId: string;
-            /** Format: int32 */
-            durationDays: number | string;
-        };
-        StartYooKassaCheckoutResponse: {
-            /** Format: uuid */
-            paymentId: string;
-            confirmationUrl: string;
-            yooKassaPaymentId: string;
-        };
-        SyncYooKassaPaymentResponse: {
-            code: string;
-            yooKassaStatus?: null | string;
-            message?: null | string;
         };
         PaymentResponse: {
             /** Format: uuid */
@@ -3551,6 +3617,23 @@ export interface components {
         };
         RegisterResponse: {
             status: string;
+        };
+        StartYooKassaCheckoutRequest: {
+            /** Format: uuid */
+            planId: string;
+            /** Format: int32 */
+            durationDays: number | string;
+        };
+        StartYooKassaCheckoutResponse: {
+            /** Format: uuid */
+            paymentId: string;
+            confirmationUrl: string;
+            yooKassaPaymentId: string;
+        };
+        SyncYooKassaPaymentResponse: {
+            code: string;
+            yooKassaStatus?: null | string;
+            message?: null | string;
         };
         UpdateClientProfileRequest: {
             lastName: string;
@@ -3610,6 +3693,8 @@ export interface components {
             membershipId: string;
             /** Format: uuid */
             clientId: string;
+            /** Format: int32 */
+            disciplineBonusAccrued?: null | number | string;
         };
     };
     responses: never;
