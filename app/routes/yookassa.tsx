@@ -32,7 +32,7 @@ export default function MembershipYooKassaReturnRoute() {
 
 	const { mutate, isPending } = $api.useMutation(
 		'post',
-		'/membership/yookassa/sync/{paymentId}'
+		'/yookassa/sync/{paymentId}'
 	);
 
 	useEffect(() => {

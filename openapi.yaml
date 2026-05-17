@@ -2538,115 +2538,6 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-  /membership/yookassa/checkout:
-    post:
-      tags:
-        - Абонементы
-      summary: Оплатить абонемент через ЮKassa
-      description: Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя
-        на страницу оплаты.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-          text/json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-          application/*+json:
-            schema:
-              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
-        "400":
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-  /membership/yookassa/sync/{paymentId}:
-    post:
-      tags:
-        - Абонементы
-      summary: Синхронизировать статус платежа ЮKassa
-      description: Запрашивает актуальный статус платежа в API ЮKassa и при успехе
-        активирует абонемент.
-      parameters:
-        - name: paymentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: OK
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
-        "400":
-          description: Bad Request
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-        "403":
-          description: Forbidden
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-        "404":
-          description: Not Found
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-            text/json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-        "502":
-          description: Bad Gateway
   /membership/buy:
     post:
       tags:
@@ -2793,14 +2684,152 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
         "502":
           description: Bad Gateway
-  /webhooks/yookassa:
+  /yookassa/webhook:
     post:
       tags:
-        - YooKassaWebhook
+        - ЮKassa
       summary: Webhook ЮKassa
+      description: Обрабатывает уведомления от ЮKassa.
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "502":
+          description: Bad Gateway
+  /yookassa/checkout:
+    post:
+      tags:
+        - ЮKassa
+      summary: Оплатить абонемент через ЮKassa
+      description: Создаёт платеж в ЮKassa и возвращает URL для перехода пользователя
+        на страницу оплаты.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/StartYooKassaCheckoutRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/StartYooKassaCheckoutResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "502":
+          description: Bad Gateway
+  /yookassa/sync/{paymentId}:
+    post:
+      tags:
+        - ЮKassa
+      summary: Синхронизировать статус платежа ЮKassa
+      description: Запрашивает актуальный статус платежа в API ЮKassa и при успехе
+        активирует абонемент.
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/SyncYooKassaPaymentResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "502":
+          description: Bad Gateway
 components:
   schemas:
     AdminSetMembershipRequest:
@@ -3769,6 +3798,7 @@ components:
       required:
         - planId
         - durationDays
+        - returnUrl
       type: object
       properties:
         planId:
@@ -3780,19 +3810,14 @@ components:
             - integer
             - string
           format: int32
+        returnUrl:
+          type: string
     StartYooKassaCheckoutResponse:
       required:
-        - paymentId
         - confirmationUrl
-        - yooKassaPaymentId
       type: object
       properties:
-        paymentId:
-          type: string
-          format: uuid
         confirmationUrl:
-          type: string
-        yooKassaPaymentId:
           type: string
     SyncYooKassaPaymentResponse:
       required:
@@ -3995,4 +4020,4 @@ tags:
   - name: Дашборд — посещения
   - name: Абонементы
   - name: AI
-  - name: YooKassaWebhook
+  - name: ЮKassa

@@ -80,7 +80,7 @@ export default function CabinetMembershipRoute() {
 
 	const yookassaCheckout = $api.useMutation(
 		'post',
-		'/membership/yookassa/checkout',
+		'/yookassa/checkout',
 		{
 			onError: (err) =>
 				toast.error(getErrorMessage(err, 'Не удалось перейти к оплате ЮKassa'))
@@ -154,6 +154,8 @@ export default function CabinetMembershipRoute() {
 	const anyPayMethod =
 		paymentOptions.length > 0 || payMethods.isPending || payMethods.isFetching;
 
+	const returnUrl = useMemo(() => `${window.location.origin}/yookassa/return`, []);
+
 	function submitPayment() {
 		if (!selectedPlan || selectedPayMethod === null) return;
 		if (selectedPayMethod === PaymentMethod.YooKassa) {
@@ -161,7 +163,8 @@ export default function CabinetMembershipRoute() {
 				{
 					body: {
 						planId: selectedPlan.id,
-						durationDays
+						durationDays,
+						returnUrl
 					}
 				},
 				{

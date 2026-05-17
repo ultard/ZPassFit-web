@@ -45,8 +45,18 @@ const links = [
 	{ to: '/admin/clients', label: 'Клиенты', Icon: RiUser3Line },
 	{ to: '/admin/visits', label: 'Посещения', Icon: RiCalendarCheckLine },
 	{ to: '/admin/memberships', label: 'Абонементы', Icon: RiTicket2Line },
-	{ to: '/admin/membership-plans', label: 'Тарифы', Icon: RiPriceTag3Line },
-	{ to: '/admin/levels', label: 'Уровни', Icon: RiTrophyLine },
+	{
+		to: '/admin/membership-plans',
+		label: 'Тарифы',
+		Icon: RiPriceTag3Line,
+		adminOnly: true
+	},
+	{
+    to: '/admin/levels',
+    label: 'Уровни',
+    Icon: RiTrophyLine,
+    adminOnly: true
+  },
 	{ to: '/admin/bonuses', label: 'Бонусы', Icon: RiGiftLine }
 ];
 
