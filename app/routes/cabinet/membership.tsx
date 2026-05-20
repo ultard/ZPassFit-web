@@ -78,14 +78,10 @@ export default function CabinetMembershipRoute() {
 			toast.error(getErrorMessage(err, 'Не удалось купить абонемент'))
 	});
 
-	const yookassaCheckout = $api.useMutation(
-		'post',
-		'/yookassa/checkout',
-		{
-			onError: (err) =>
-				toast.error(getErrorMessage(err, 'Не удалось перейти к оплате ЮKassa'))
-		}
-	);
+	const yookassaCheckout = $api.useMutation('post', '/yookassa/checkout', {
+		onError: (err) =>
+			toast.error(getErrorMessage(err, 'Не удалось перейти к оплате ЮKassa'))
+	});
 
 	const canBuy =
 		Boolean(selectedPlan) && Number.isFinite(durationDays) && durationDays >= 1;
@@ -154,7 +150,10 @@ export default function CabinetMembershipRoute() {
 	const anyPayMethod =
 		paymentOptions.length > 0 || payMethods.isPending || payMethods.isFetching;
 
-	const returnUrl = useMemo(() => `${window.location.origin}/yookassa/return`, []);
+	const returnUrl = useMemo(
+		() => `${window.location.origin}/yookassa/return`,
+		[]
+	);
 
 	function submitPayment() {
 		if (!selectedPlan || selectedPayMethod === null) return;

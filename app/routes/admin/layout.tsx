@@ -52,11 +52,11 @@ const links = [
 		adminOnly: true
 	},
 	{
-    to: '/admin/levels',
-    label: 'Уровни',
-    Icon: RiTrophyLine,
-    adminOnly: true
-  },
+		to: '/admin/levels',
+		label: 'Уровни',
+		Icon: RiTrophyLine,
+		adminOnly: true
+	},
 	{ to: '/admin/bonuses', label: 'Бонусы', Icon: RiGiftLine }
 ];
 

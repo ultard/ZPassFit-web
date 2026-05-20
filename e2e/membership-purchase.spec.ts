@@ -7,9 +7,7 @@ test.describe('Покупка абонемента', () => {
 		await login(page, CLIENT_EMAIL);
 		await page.goto('/cabinet/membership');
 
-		await expect(
-			page.getByText('Купить абонемент')
-		).toBeVisible();
+		await expect(page.getByText('Купить абонемент')).toBeVisible();
 
 		const firstPlan = page
 			.locator('button')
@@ -17,9 +15,7 @@ test.describe('Покупка абонемента', () => {
 			.first();
 		await firstPlan.click();
 
-		const balanceOption = page
-			.locator('label')
-			.filter({ hasText: /Баланс/i });
+		const balanceOption = page.locator('label').filter({ hasText: /Баланс/i });
 		await expect(balanceOption).toBeVisible();
 		await balanceOption.click();
 

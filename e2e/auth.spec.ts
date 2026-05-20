@@ -1,11 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import {
-	ADMIN_EMAIL,
-	CLIENT_EMAIL,
-	login,
-	logout
-} from './fixtures/auth';
+import { ADMIN_EMAIL, CLIENT_EMAIL, login, logout } from './fixtures/auth';
 
 test.describe('Авторизация', () => {
 	test('Вход в личный кабинет', async ({ page }) => {

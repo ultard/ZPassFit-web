@@ -17,8 +17,7 @@ import { useAuthStore } from '~/store/auth.store';
 
 function isCabinetLinkActive(pathname: string, to: string) {
 	return (
-		pathname === to ||
-		(to !== '/cabinet' && pathname.startsWith(`${to}/`))
+		pathname === to || (to !== '/cabinet' && pathname.startsWith(`${to}/`))
 	);
 }
 

@@ -13,9 +13,7 @@ test.describe('Личный кабинет', () => {
 
 		await page.getByRole('link', { name: 'Абонемент' }).click();
 		await expect(page).toHaveURL(/\/cabinet\/membership/);
-		await expect(
-			page.getByText('Текущий абонемент')
-		).toBeVisible();
+		await expect(page.getByText('Текущий абонемент')).toBeVisible();
 
 		await page.getByRole('link', { name: 'Обзор' }).click();
 		await expect(page).toHaveURL(/\/cabinet/);
