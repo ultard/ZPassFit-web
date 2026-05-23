@@ -41,6 +41,8 @@ bun dev
 -   `bun build` — сборка проекта для продакшена.
 -   `bun check` — запуск Biome для проверки и исправления кода.
 -   `bun api:gen` — генерация TypeScript типов на основе OpenAPI схемы (`openapi.yaml`).
+-   `bun run test` — UI-тесты компонентов (Vitest + React Testing Library).
+-   `bun run test:watch` — те же тесты в режиме наблюдения.
 -   `bun test:e2e` — запуск сквозных тестов Playwright.
 -   `bun test:e2e:ui` — запуск интерфейса Playwright для отладки тестов.
 

@@ -9,6 +9,8 @@
 		"typecheck": "react-router typegen && tsc",
 		"check": "biome check --write",
 		"api:gen": "openapi-typescript ./openapi.yaml -o ./app/lib/api.schema.ts",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui"
 	},
@@ -38,16 +40,22 @@
 		"zustand": "^5.0.12"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.52.0",
 		"@biomejs/biome": "2.4.12",
+		"@playwright/test": "^1.52.0",
 		"@react-router/dev": "7.14.0",
 		"@tailwindcss/vite": "^4.2.2",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.3.2",
+		"@testing-library/user-event": "^14.6.1",
 		"@types/node": "^22",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
+		"@vitest/coverage-v8": "^4.1.7",
+		"jsdom": "^29.1.1",
 		"openapi-typescript": "^7.13.0",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^5.9.3",
-		"vite": "^8.0.3"
+		"vite": "^8.0.3",
+		"vitest": "^4.1.7"
 	}
 }
