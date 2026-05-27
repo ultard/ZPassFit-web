@@ -16,7 +16,7 @@ test.describe('Регистрация посещения', () => {
 		await login(clientPage, CLIENT_EMAIL);
 		await clientPage.goto('/cabinet/qr');
 		await clientPage.getByRole('button', { name: 'Сгенерировать' }).click();
-		await expect(clientPage.locator('svg')).toBeVisible();
+		await expect(clientPage.locator('svg[role="img"]')).toBeVisible();
 
 		const tokenText = await clientPage
 			.locator('.break-all')
