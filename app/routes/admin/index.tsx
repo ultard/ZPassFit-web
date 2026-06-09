@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import $api from '~/lib/api.client';
+import { formatDashboardKpiValue } from '~/lib/dashboard-labels';
 
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import {
@@ -133,7 +134,7 @@ export default function AdminOverviewRoute() {
 							</CardHeader>
 							<CardContent className="grid gap-1">
 								<div className="text-2xl font-semibold">
-									{String(k.value)} {k.unit}
+									{formatDashboardKpiValue(k.id, k.value, k.unit)}
 								</div>
 								<div
 									className={
@@ -144,7 +145,8 @@ export default function AdminOverviewRoute() {
 									<Icon className="size-4" />
 									<span>{change == null ? '—' : `${change.toFixed(1)}%`}</span>
 									<span className="text-muted-foreground">
-										vs {String(k.previousValue)}
+										· было{' '}
+										{formatDashboardKpiValue(k.id, k.previousValue, k.unit)}
 									</span>
 								</div>
 							</CardContent>
