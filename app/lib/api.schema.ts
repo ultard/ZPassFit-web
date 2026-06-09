@@ -1281,6 +1281,96 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/clients/{id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Статистика клиента
+         * @description Посещения, платежи и бонусы клиента за выбранный календарный месяц.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    year?: number | string;
+                    month?: number | string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClientStatsResponse"];
+                        "application/json": components["schemas"]["ClientStatsResponse"];
+                        "text/json": components["schemas"]["ClientStatsResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/dashboard/clients/{id}/approve": {
         parameters: {
             query?: never;
@@ -1584,6 +1674,99 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/clients/{id}/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Установить баланс
+         * @description Задаёт абсолютное значение баланса клиента. Только для администратора.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetClientBalanceRequest"];
+                    "text/json": components["schemas"]["SetClientBalanceRequest"];
+                    "application/*+json": components["schemas"]["SetClientBalanceRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ClientResponse"];
+                        "application/json": components["schemas"]["ClientResponse"];
+                        "text/json": components["schemas"]["ClientResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3430,6 +3613,10 @@ export interface components {
             /** Format: int32 */
             amount: number | string;
         };
+        SetClientBalanceRequest: {
+            /** Format: int32 */
+            balance: number | string;
+        };
         DashboardDayPoint: {
             /** Format: date */
             date: string;
@@ -3490,6 +3677,26 @@ export interface components {
             revenueByDay: components["schemas"]["DashboardRevenueDayPoint"][];
             newClientsByDay: components["schemas"]["DashboardDayPoint"][];
             membershipsByPlan: components["schemas"]["DashboardMembershipPlanPoint"][];
+        };
+        ClientStatsResponse: {
+            period: components["schemas"]["DashboardPeriodMeta"];
+            summary: components["schemas"]["ClientStatsSummary"];
+            series: components["schemas"]["ClientStatsSeries"];
+        };
+        ClientStatsSummary: {
+            /** Format: int32 */
+            visits: number | string;
+            /** Format: int32 */
+            visitDays: number | string;
+            /** Format: int64 */
+            paymentsAmount: number | string;
+            /** Format: int32 */
+            bonusAccrued: number | string;
+        };
+        ClientStatsSeries: {
+            visitsByDay: components["schemas"]["DashboardDayPoint"][];
+            paymentsByDay: components["schemas"]["DashboardRevenueDayPoint"][];
+            bonusAccrualsByDay: components["schemas"]["DashboardRevenueDayPoint"][];
         };
         LevelResponse: {
             /** Format: uuid */

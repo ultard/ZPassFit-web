@@ -10,6 +10,20 @@ export enum ClientStatus {
 	Blocked
 }
 
+export function clientStatusLabel(status: ClientStatus | number | string) {
+	const value = typeof status === 'string' ? Number(status) : status;
+	switch (value) {
+		case ClientStatus.Pending:
+			return 'Ожидает подтверждения';
+		case ClientStatus.Active:
+			return 'Активен';
+		case ClientStatus.Blocked:
+			return 'Заблокирован';
+		default:
+			return String(status);
+	}
+}
+
 export enum BonusTransactionType {
 	Accrual,
 	Redeem,

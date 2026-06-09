@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 
 import $api from '~/lib/api.client';
+import { clientStatusLabel } from '~/lib/api.types';
 import { getErrorMessage } from '~/lib/error-message';
 
 import { Button } from '~/components/ui/button';
@@ -55,7 +56,7 @@ export default function AdminClientsRoute() {
 									</div>
 									<div className="flex items-center gap-2">
 										<div className="text-sm text-muted-foreground">
-											{String(c.status)}
+											{clientStatusLabel(c.status)}
 										</div>
 										<Button asChild size="sm" variant="outline">
 											<Link to={`/admin/clients/${c.id}`}>Открыть</Link>

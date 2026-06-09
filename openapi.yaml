@@ -1053,6 +1053,96 @@ paths:
             text/json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}/stats:
+    get:
+      tags:
+        - Дашборд — клиенты
+      summary: Статистика клиента
+      description: Посещения, платежи и бонусы клиента за выбранный календарный месяц.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: year
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+        - name: month
+          in: query
+          schema:
+            pattern: ^-?(?:0|[1-9]\d*)$
+            type:
+              - integer
+              - string
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientStatsResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientStatsResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientStatsResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
   /dashboard/clients/{id}/approve:
     post:
       tags:
@@ -1233,6 +1323,92 @@ paths:
           application/*+json:
             schema:
               $ref: "#/components/schemas/CreditClientBalanceRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+            text/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /dashboard/clients/{id}/balance:
+    put:
+      tags:
+        - Дашборд — клиенты
+      summary: Установить баланс
+      description: Задаёт абсолютное значение баланса клиента. Только для администратора.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetClientBalanceRequest"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/SetClientBalanceRequest"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/SetClientBalanceRequest"
         required: true
       responses:
         "200":
@@ -3149,6 +3325,17 @@ components:
             - integer
             - string
           format: int32
+    SetClientBalanceRequest:
+      required:
+        - balance
+      type: object
+      properties:
+        balance:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
     DashboardDayPoint:
       required:
         - date
@@ -3324,6 +3511,70 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DashboardMembershipPlanPoint"
+    ClientStatsResponse:
+      required:
+        - period
+        - summary
+        - series
+      type: object
+      properties:
+        period:
+          $ref: "#/components/schemas/DashboardPeriodMeta"
+        summary:
+          $ref: "#/components/schemas/ClientStatsSummary"
+        series:
+          $ref: "#/components/schemas/ClientStatsSeries"
+    ClientStatsSummary:
+      required:
+        - visits
+        - visitDays
+        - paymentsAmount
+        - bonusAccrued
+      type: object
+      properties:
+        visits:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        visitDays:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+        paymentsAmount:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int64
+        bonusAccrued:
+          pattern: ^-?(?:0|[1-9]\d*)$
+          type:
+            - integer
+            - string
+          format: int32
+    ClientStatsSeries:
+      required:
+        - visitsByDay
+        - paymentsByDay
+        - bonusAccrualsByDay
+      type: object
+      properties:
+        visitsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardDayPoint"
+        paymentsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardRevenueDayPoint"
+        bonusAccrualsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/DashboardRevenueDayPoint"
     LevelResponse:
       required:
         - id
